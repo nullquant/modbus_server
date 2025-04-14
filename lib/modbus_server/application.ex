@@ -8,8 +8,29 @@ defmodule ModbusServer.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: ModbusServer.Worker.start_link(arg)
-      # {ModbusServer.Worker, arg}
+      {DynamicSupervisor, name: Tcp.Handler.DynamicSupervisor, strategy: :one_for_one},
+      %{
+        id: Tcp.ServerWrite,
+        start:
+          {Tcp.Server, :start_link,
+           [
+             {Application.get_env(:owen_cloud, :eth0_port),
+              Application.get_env(:owen_cloud, :eth0_slave), :write}
+           ]}
+      },
+      # %{
+      #  id: Tcp.ServerRead,
+      #  start:
+      #    {Tcp.Server, :start_link,
+      #     [
+      #       {Application.get_env(:owen_cloud, :owcl_port),
+      #        Application.get_env(:owen_cloud, :owcl_slave), :read}
+      #     ]}
+      # },
+      %{
+        id: ModbusServer.EtsServer,
+        start: {ModbusServer.EtsServer, :start_link, [0]}
+      }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
