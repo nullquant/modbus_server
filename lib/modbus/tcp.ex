@@ -26,7 +26,7 @@ defmodule Modbus.Tcp do
             case cmd do
               n when n in [:rhr, :rir] ->
                 # read -> read and send reply to client
-                case GenServer.call(OwenCloud.EtsServer, {:read, address, count}) do
+                case GenServer.call(ModbusServer.EtsServer, {:read, address, count}) do
                   :error ->
                     # reply to client with error
                     {:error, Modbus.Tcp.pack_error(modbus_request, 2, transid)}
@@ -45,7 +45,7 @@ defmodule Modbus.Tcp do
           operation == role ->
             case cmd do
               :phr ->
-                GenServer.cast(OwenCloud.EtsServer, {:write, modbus_request})
+                GenServer.cast(ModbusServer.EtsServer, {:write, modbus_request})
                 # reply to client with answer
                 {:reply, Modbus.Tcp.pack_response(modbus_request, data, transid)}
 

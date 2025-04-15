@@ -9,5 +9,5 @@
 *.overrides.env
 erl_crash.dump
 *.ez
-owen_cloud-*.tar
+modbus_server-*.tar
 *.log

@@ -27,23 +27,8 @@ defmodule Modbus.IEEE754 do
     value
   end
 
-  @doc """
-  Converts a couple of 16-bit registers to IEEE754 float.
-
-  ## Example
-
-  ```elixir
-  +5.0 = IEEE754.from_2_regs(0x40a0, 0x0000, :be)
-  ```
-  """
-  def from_2_regs([w0, w1], :be) do
-    <<f::float-32>> = <<w0::16, w1::16>>
-    f
-  end
-
-  def from_2_regs([w0, w1], :le) do
-    <<f::float-32>> = <<w1::16, w0::16>>
-    f
+  def from_2_regs([w0, w1], endianness) do
+    from_2_regs(w0, w1, endianness)
   end
 
   @doc """

@@ -41,16 +41,16 @@ defmodule ModbusServer.EtsServer do
     set_string(61728, "GQ0ODHMO", 16)
 
     # Control registers
-    # OwCl_ON
-    set_integer(5000, 0)
+    # CLOUD_ON
+    set_integer(Application.get_env(:modbus_server, :cloud_on_register), 0)
     # WiFi_Command
-    set_integer(5001, 0)
+    set_integer(Application.get_env(:modbus_server, :wifi_command_register), 0)
     # WiFi_Status
-    set_integer(5002, 0)
+    set_integer(Application.get_env(:modbus_server, :wifi_status_register), 0)
     # WiFi_SSID
-    set_string(5003, "", 32)
+    set_string(Application.get_env(:modbus_server, :wifi_ssid_register), "", 32)
     # WiFi_Password
-    set_string(5040, "", 16)
+    set_string(Application.get_env(:modbus_server, :wifi_password_register), "", 16)
 
     Logger.info("EtsServer: initialization")
     {:ok, %{data: table}}
@@ -59,14 +59,14 @@ defmodule ModbusServer.EtsServer do
   @impl true
   def handle_cast({:write, write_request}, state) do
     {_, _, address, data, _} = write_request
-    Logger.info("EtsServer: Write #{data} to address #{address}")
+    Logger.info("EtsServer: Write #{inspect(data)} to address #{address}")
     write_values(address, data)
     {:noreply, state}
   end
 
   @impl true
   def handle_call({:read, address, len}, _from, state) do
-    Logger.info("EtsServer: Read from address #{address}:#{len}")
+    # Logger.info("EtsServer: Read from address #{address}:#{len}")
 
     reply =
       case check_request(address, len) do

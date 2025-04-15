@@ -10,17 +10,10 @@ defmodule Tcp.CloudClient do
   end
 
   @impl true
-  def init(args) do
+  def init(_args) do
     Process.flag(:trap_exit, true)
-
-    # {:ok, socket} = :gen_tcp.connect(SomeHostInNet, 5678)
-    # ok = gen_tcp:send(Sock, "Some Data")
-
-    socket = Map.get(args, :socket)
-    slave = Map.get(args, :slave)
-    role = Map.get(args, :role)
-    :inet.setopts(socket, active: true)
-    {:ok, %{socket: socket, slave: slave, role: role}}
+    {:noreply, state} = check_flag(%{working: [0]})
+    {:ok, state}
   end
 
   @impl true
@@ -36,6 +29,11 @@ defmodule Tcp.CloudClient do
     end
 
     {:noreply, state}
+  end
+
+  @impl true
+  def handle_info(:check_flag, state) do
+    check_flag(state)
   end
 
   @impl true
@@ -62,5 +60,44 @@ defmodule Tcp.CloudClient do
     Logger.info("Tcp.CloudClient: Shutdown  #{inspect(reason)}")
     :gen_tcp.close(socket)
     {:normal, state}
+  end
+
+  @impl true
+  def terminate(reason, state) do
+    Logger.info("Tcp.CloudClient: Shutdown  #{inspect(reason)}")
+    {:normal, state}
+  end
+
+  defp check_flag(%{working: working} = state) do
+    Process.send_after(self(), :check_flag, 1000)
+
+    case GenServer.call(
+           ModbusServer.EtsServer,
+           {:read, Application.get_env(:modbus_server, :cloud_on_register), 1}
+         ) do
+      ^working ->
+        {:noreply, state}
+
+      [0] ->
+        {:stop, {:shutdown, "Cloud register is off"}, state}
+
+      data ->
+        {:ok, socket} =
+          :gen_tcp.connect(
+            String.to_charlist(Application.get_env(:modbus_server, :cloud_host)),
+            Application.get_env(:modbus_server, :cloud_port),
+            [:binary, {:packet, 0}]
+          )
+
+        Logger.info("(#{__MODULE__}): Connected to cloud server")
+
+        {:noreply,
+         %{
+           working: data,
+           socket: socket,
+           slave: Application.get_env(:modbus_server, :cloud_slave),
+           role: :read
+         }}
+    end
   end
 end
