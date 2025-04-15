@@ -14,8 +14,8 @@ defmodule ModbusServer.Application do
         start:
           {Tcp.Server, :start_link,
            [
-             {Application.get_env(:owen_cloud, :eth0_port),
-              Application.get_env(:owen_cloud, :eth0_slave), :write}
+             {Application.get_env(:modbus_server, :eth0_port),
+              Application.get_env(:modbus_server, :eth0_slave), :write}
            ]}
       },
       # %{
@@ -23,8 +23,8 @@ defmodule ModbusServer.Application do
       #  start:
       #    {Tcp.Server, :start_link,
       #     [
-      #       {Application.get_env(:owen_cloud, :owcl_port),
-      #        Application.get_env(:owen_cloud, :owcl_slave), :read}
+      #       {Application.get_env(:modbus_server, :owcl_port),
+      #        Application.get_env(:modbus_server, :owcl_slave), :read}
       #     ]}
       # },
       %{
