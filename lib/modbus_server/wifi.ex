@@ -36,7 +36,8 @@ defmodule ModbusServer.Wifi do
     result
     |> String.split("\n")
     |> Enum.map(fn s -> s |> String.split(":") |> Enum.at(7) end)
-    |> Enum.filter(fn s -> s != "" end)
+    |> Enum.filter(fn s -> s != "" and s != nil end)
+    |> Enum.uniq()
   end
 
   defp read_ip(interface) do
