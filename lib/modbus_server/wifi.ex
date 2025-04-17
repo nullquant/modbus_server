@@ -17,11 +17,12 @@ defmodule ModbusServer.Wifi do
 
   @impl true
   def handle_info(:read, state) do
-    # Logger.info("(#{__MODULE__}): Read WiFi SSIDs")
+    Logger.info("(#{__MODULE__}): Read WiFi SSIDs")
 
     state = read_wifi(state)
 
     Logger.info("(#{__MODULE__}): Read WiFi SSIDs #{inspect(state)}")
+    IO.puts("#{inspect(state)}")
 
     {:noreply, state}
   end
