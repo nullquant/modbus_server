@@ -57,6 +57,7 @@ defmodule ModbusServer.Wifi do
 
     [connected | not_connected]
     |> List.flatten()
+    |> Enum.uniq()
     |> Stream.concat(Stream.repeatedly(fn -> "" end))
     |> Enum.take(8)
     |> write_ssids()
