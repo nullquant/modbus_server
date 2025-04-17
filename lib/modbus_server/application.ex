@@ -15,6 +15,10 @@ defmodule ModbusServer.Application do
       %{
         id: Tcp.CloudClient,
         start: {Tcp.CloudClient, :start_link, [0]}
+      },
+      %{
+        id: ModbusServer.Wifi,
+        start: {ModbusServer.Wifi, :start_link, [0]}
       }
       # {DynamicSupervisor, name: Tcp.Handler.DynamicSupervisor, strategy: :one_for_one},
       # %{

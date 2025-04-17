@@ -24,9 +24,9 @@ defmodule ModbusServer.EtsServer do
     # "Hyst"
     set_float(8, 1.0)
     # "U.Lo"
-    set_float(10, 10.0)
+    set_float(10, 0.0)
     # "U.Hi"
-    set_float(12, 17.0)
+    set_float(12, 0.0)
     # "PPV"
     set_float(14, 0.0)
     # "inp.F"
@@ -36,9 +36,9 @@ defmodule ModbusServer.EtsServer do
     # "di.rc"
     set_integer(18, 1)
     # "ID"
-    set_string(61572, "94606191032457742", 18)
+    set_string(61572, "94606191032457742", 18, :modbus)
     # "Token"
-    set_string(61728, "GQ0ODHMO", 16)
+    set_string(61728, "GQ0ODHMO", 16, :modbus)
 
     # Control registers
     # CLOUD_ON
@@ -115,18 +115,25 @@ defmodule ModbusServer.EtsServer do
     :ets.insert(:modbus_table, {address, value})
   end
 
-  defp set_string(address, string, len) do
-    values_list = string_to_values(string, len)
+  defp set_string(address, string, len, type \\ :simple) do
+    values_list =
+      case type do
+        :modbus ->
+          rotated = rotate_bytes([], to_charlist(string))
+
+          rotated
+          |> Enum.reverse()
+          |> Stream.concat(Stream.repeatedly(fn -> 0 end))
+          |> Enum.take(len)
+
+        _ ->
+          string
+          |> to_charlist()
+          |> Stream.concat(Stream.repeatedly(fn -> 0 end))
+          |> Enum.take(len)
+      end
+
     write_values(address, values_list)
-  end
-
-  def string_to_values(string, length) do
-    rotated = rotate_bytes([], to_charlist(string))
-
-    rotated
-    |> Enum.reverse()
-    |> Stream.concat(Stream.repeatedly(fn -> 0 end))
-    |> Enum.take(length)
   end
 
   defp rotate_bytes([], []) do
