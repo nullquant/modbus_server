@@ -12,7 +12,7 @@ defmodule ModbusServer.Wifi do
   @impl true
   def init(_args) do
     Process.send_after(self(), :read, 1000)
-    {:ok, %{}}
+    {:ok, %{connected: [], ssid: [], ip: ""}}
   end
 
   @impl true
