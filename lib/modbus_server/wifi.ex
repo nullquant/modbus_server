@@ -31,13 +31,27 @@ defmodule ModbusServer.Wifi do
     Process.send_after(self(), :read, 5000)
 
     # "-f active,SSID",
-    {result, _} = System.cmd("nmcli", ["-t", "device", "wifi"])
+    {result, 0} = System.cmd("nmcli", ["-t", "device", "wifi"])
 
-    result
-    |> String.split("\n")
-    |> Enum.map(fn s -> s |> String.split(":") |> Enum.at(7) end)
-    |> Enum.filter(fn s -> s != "" and s != nil end)
-    |> Enum.uniq()
+    Logger.info("(#{__MODULE__}): #{inspect(result)}")
+
+    connected =
+      result
+      |> String.split("\n")
+      |> Enum.filter(fn s -> String.at(s, 0) == "*" end)
+      |> Enum.map(fn s -> s |> String.split(":") |> Enum.at(7) end)
+      |> Enum.filter(fn s -> s != "" and s != nil end)
+      |> Enum.uniq()
+
+    not_connected =
+      result
+      |> String.split("\n")
+      |> Enum.filter(fn s -> String.at(s, 0) != "*" end)
+      |> Enum.map(fn s -> s |> String.split(":") |> Enum.at(7) end)
+      |> Enum.filter(fn s -> s != "" and s != nil end)
+      |> Enum.uniq()
+
+    {connected, not_connected}
   end
 
   defp read_ip(interface) do
