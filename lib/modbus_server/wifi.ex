@@ -39,7 +39,6 @@ defmodule ModbusServer.Wifi do
       result
       |> String.split("\n")
       |> Enum.filter(fn s -> String.at(s, 0) == "*" end)
-      |> Enum.at(0)
       |> Enum.map(fn s -> s |> String.split(":") |> Enum.at(7) end)
 
     not_connected =
