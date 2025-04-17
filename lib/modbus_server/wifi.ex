@@ -12,28 +12,24 @@ defmodule ModbusServer.Wifi do
   @impl true
   def init(_args) do
     # Process.flag(:trap_exit, true)
-    state = read_wifi()
-    {:ok, state}
+    {:ok, %{}}
   end
 
   @impl true
-  def handle_info(:read, _state) do
-    Logger.info("(#{__MODULE__}): Read WiFi SSIDs")
+  def handle_info(:read, state) do
+    # Logger.info("(#{__MODULE__}): Read WiFi SSIDs")
 
-    read_ip("eth0")
-    state = read_wifi()
-    Logger.info("(#{__MODULE__}): #{inspect(state)}")
+    state = read_wifi(state)
+
+    Logger.info("(#{__MODULE__}): Read WiFi SSIDs #{inspect(state)}")
 
     {:noreply, state}
   end
 
-  defp read_wifi() do
+  defp read_wifi(state) do
     Process.send_after(self(), :read, 5000)
 
-    # "-f active,SSID",
     {result, 0} = System.cmd("nmcli", ["-t", "device", "wifi"])
-
-    Logger.info("(#{__MODULE__}): #{inspect(result)}")
 
     connected =
       result
@@ -49,7 +45,13 @@ defmodule ModbusServer.Wifi do
       |> Enum.filter(fn s -> s != "" and s != nil end)
       |> Enum.uniq()
 
-    {connected, not_connected}
+    ip =
+      case connected do
+        [] -> ""
+        _ -> read_ip("wlan0")
+      end
+
+    %{state | connected: connected, ssid: not_connected, ip: ip}
   end
 
   defp read_ip(interface) do
