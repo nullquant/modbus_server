@@ -34,6 +34,9 @@ defmodule ModbusServer.Wifi do
     {result, _} = System.cmd("nmcli", ["-t", "device", "wifi"])
 
     result
+    |> String.split("\n")
+    |> Enum.map(fn s -> s |> String.split(":") |> Enum.at(7) end)
+    |> Enum.filter(fn s -> s != "" end)
   end
 
   defp read_ip(interface) do
