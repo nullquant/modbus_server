@@ -48,9 +48,23 @@ defmodule ModbusServer.Wifi do
 
     ip =
       case connected do
-        [] -> ""
-        _ -> read_ip("wlan0")
+        [] ->
+          ""
+
+        _ ->
+          read_ip("wlan0")
       end
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_string, {Application.get_env(:modbus_server, :wifi_ip_register), ip, 16}}
+    )
+
+    [connected | not_connected]
+    |> List.flatten()
+    |> Stream.concat(Stream.repeatedly(fn -> "" end))
+    |> Enum.take(8)
+    |> write_ssids()
 
     %{state | connected: connected, ssid: not_connected, ip: ip}
   end
@@ -63,5 +77,47 @@ defmodule ModbusServer.Wifi do
     |> Enum.at(6)
     |> String.split("/")
     |> Enum.at(0)
+  end
+
+  defp write_ssids([ssid1, ssid2, ssid3, ssid4, ssid5, ssid6, ssid7, ssid8]) do
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid1_register), ssid1, 16}}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid2_register), ssid2, 16}}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid3_register), ssid3, 16}}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid4_register), ssid4, 16}}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid5_register), ssid5, 16}}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid6_register), ssid6, 16}}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid7_register), ssid7, 16}}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid8_register), ssid8, 16}}
+    )
   end
 end

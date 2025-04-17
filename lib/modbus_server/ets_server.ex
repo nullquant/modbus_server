@@ -45,12 +45,22 @@ defmodule ModbusServer.EtsServer do
     set_integer(Application.get_env(:modbus_server, :cloud_on_register), 0)
     # WiFi_Command
     set_integer(Application.get_env(:modbus_server, :wifi_command_register), 0)
-    # WiFi_Status
-    set_integer(Application.get_env(:modbus_server, :wifi_status_register), 0)
+    # WiFi_IP
+    set_string(Application.get_env(:modbus_server, :wifi_ip_register), "", 16)
     # WiFi_SSID
     set_string(Application.get_env(:modbus_server, :wifi_ssid_register), "", 32)
     # WiFi_Password
     set_string(Application.get_env(:modbus_server, :wifi_password_register), "", 16)
+
+    # WiFi_SSIDs
+    set_string(Application.get_env(:modbus_server, :wifi_ssid1_register), "", 32)
+    set_string(Application.get_env(:modbus_server, :wifi_ssid2_register), "", 32)
+    set_string(Application.get_env(:modbus_server, :wifi_ssid3_register), "", 32)
+    set_string(Application.get_env(:modbus_server, :wifi_ssid4_register), "", 32)
+    set_string(Application.get_env(:modbus_server, :wifi_ssid5_register), "", 32)
+    set_string(Application.get_env(:modbus_server, :wifi_ssid6_register), "", 32)
+    set_string(Application.get_env(:modbus_server, :wifi_ssid7_register), "", 32)
+    set_string(Application.get_env(:modbus_server, :wifi_ssid8_register), "", 32)
 
     Logger.info("EtsServer: initialization")
     {:ok, %{data: table}}
@@ -61,6 +71,13 @@ defmodule ModbusServer.EtsServer do
     {_, _, address, data, _} = write_request
     Logger.info("EtsServer: Write #{inspect(data)} to address #{address}")
     write_values(address, data)
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_cast({:set_string, address, data, len}, state) do
+    Logger.info("EtsServer: Set string #{inspect(data)} to address #{address}")
+    set_string(address, data, len)
     {:noreply, state}
   end
 
