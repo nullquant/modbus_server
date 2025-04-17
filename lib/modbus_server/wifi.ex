@@ -30,14 +30,13 @@ defmodule ModbusServer.Wifi do
   defp read_wifi() do
     Process.send_after(self(), :read, 5000)
 
-    {result, _} = System.cmd("nmcli", ["-t", "-f", "active,SSID device", "wifi"])
+    {result, _} = System.cmd("nmcli", ["-t", "-f", "active,SSID device wifi"])
 
     result
   end
 
   defp read_ip(interface) do
     {result, _} = System.cmd("/sbin/ip", ["-o", "-4", "addr", "list", interface])
-    Logger.info("(#{__MODULE__}): #{inspect(result)}")
 
     result
     |> String.split(" ")
