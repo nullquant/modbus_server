@@ -30,7 +30,7 @@ defmodule ModbusServer.Wifi do
   defp read_wifi() do
     Process.send_after(self(), :read, 5000)
 
-    {result, _} = System.cmd("nmcli", ["-t", "-f active,SSID device wifi"])
+    {result, _} = System.cmd("nmcli", ["-t", "-f active,SSID", "device wifi"])
 
     result
   end
