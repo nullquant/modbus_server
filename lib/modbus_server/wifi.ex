@@ -11,7 +11,7 @@ defmodule ModbusServer.Wifi do
 
   @impl true
   def init(_args) do
-    # Process.flag(:trap_exit, true)
+    Process.send_after(self(), :read, 1000)
     {:ok, %{}}
   end
 
