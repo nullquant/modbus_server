@@ -75,7 +75,7 @@ defmodule ModbusServer.EtsServer do
   end
 
   @impl true
-  def handle_cast({:set_string, address, data, len}, state) do
+  def handle_cast({:set_string, {address, data, len}}, state) do
     Logger.info("EtsServer: Set string #{inspect(data)} to address #{address}")
     set_string(address, data, len)
     {:noreply, state}

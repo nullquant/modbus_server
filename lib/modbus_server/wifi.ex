@@ -18,12 +18,7 @@ defmodule ModbusServer.Wifi do
   @impl true
   def handle_info(:read, state) do
     Logger.info("(#{__MODULE__}): Read WiFi SSIDs")
-
     state = read_wifi(state)
-
-    Logger.info("(#{__MODULE__}): Read WiFi SSIDs #{inspect(state)}")
-    IO.puts("#{inspect(state)}")
-
     {:noreply, state}
   end
 
@@ -57,7 +52,7 @@ defmodule ModbusServer.Wifi do
 
     GenServer.cast(
       ModbusServer.EtsServer,
-      {:set_string, {Application.get_env(:modbus_server, :wifi_ip_register), ip, 16}}
+      {:set_string, Application.get_env(:modbus_server, :wifi_ip_register), ip, 16}
     )
 
     [connected | not_connected]
@@ -82,42 +77,42 @@ defmodule ModbusServer.Wifi do
   defp write_ssids([ssid1, ssid2, ssid3, ssid4, ssid5, ssid6, ssid7, ssid8]) do
     GenServer.cast(
       ModbusServer.EtsServer,
-      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid1_register), ssid1, 16}}
+      {:set_string, Application.get_env(:modbus_server, :wifi_ssid1_register), ssid1, 16}
     )
 
     GenServer.cast(
       ModbusServer.EtsServer,
-      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid2_register), ssid2, 16}}
+      {:set_string, Application.get_env(:modbus_server, :wifi_ssid2_register), ssid2, 16}
     )
 
     GenServer.cast(
       ModbusServer.EtsServer,
-      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid3_register), ssid3, 16}}
+      {:set_string, Application.get_env(:modbus_server, :wifi_ssid3_register), ssid3, 16}
     )
 
     GenServer.cast(
       ModbusServer.EtsServer,
-      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid4_register), ssid4, 16}}
+      {:set_string, Application.get_env(:modbus_server, :wifi_ssid4_register), ssid4, 16}
     )
 
     GenServer.cast(
       ModbusServer.EtsServer,
-      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid5_register), ssid5, 16}}
+      {:set_string, Application.get_env(:modbus_server, :wifi_ssid5_register), ssid5, 16}
     )
 
     GenServer.cast(
       ModbusServer.EtsServer,
-      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid6_register), ssid6, 16}}
+      {:set_string, Application.get_env(:modbus_server, :wifi_ssid6_register), ssid6, 16}
     )
 
     GenServer.cast(
       ModbusServer.EtsServer,
-      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid7_register), ssid7, 16}}
+      {:set_string, Application.get_env(:modbus_server, :wifi_ssid7_register), ssid7, 16}
     )
 
     GenServer.cast(
       ModbusServer.EtsServer,
-      {:set_string, {Application.get_env(:modbus_server, :wifi_ssid8_register), ssid8, 16}}
+      {:set_string, Application.get_env(:modbus_server, :wifi_ssid8_register), ssid8, 16}
     )
   end
 end
