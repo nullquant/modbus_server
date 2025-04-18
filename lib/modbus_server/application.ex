@@ -19,17 +19,17 @@ defmodule ModbusServer.Application do
       %{
         id: ModbusServer.Wifi,
         start: {ModbusServer.Wifi, :start_link, [0]}
+      },
+      %{
+        id: Tcp.DirectServer,
+        start:
+          {Tcp.DirectServer, :start_link,
+           [
+             {Application.get_env(:modbus_server, :eth0_iface),
+              Application.get_env(:modbus_server, :eth0_port)}
+           ]}
       }
       # {DynamicSupervisor, name: Tcp.Handler.DynamicSupervisor, strategy: :one_for_one},
-      # %{
-      #  id: Tcp.ServerWrite,
-      #  start:
-      #    {Tcp.Server, :start_link,
-      #     [
-      #       {Application.get_env(:modbus_server, :eth0_port),
-      #        Application.get_env(:modbus_server, :eth0_slave), :write}
-      #     ]}
-      # }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -9,7 +9,7 @@ defmodule Tcp.DirectServer do
   end
 
   @impl true
-  def init({port, interface}) do
+  def init({interface, port}) do
     Process.flag(:trap_exit, true)
     ip = Modbus.Crc.get_ip(interface)
 
