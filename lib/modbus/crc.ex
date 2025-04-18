@@ -7,6 +7,7 @@ defmodule Modbus.Crc do
   """
 
   require Bitwise
+  require Logger
 
   @hi [
         0x00,
@@ -600,6 +601,8 @@ defmodule Modbus.Crc do
   end
 
   def get_ip(interface) do
+    Logger.info("get_ip: #{interface}")
+
     {result, _} = System.cmd("/sbin/ip", ["-o", "-4", "addr", "list", interface])
 
     result

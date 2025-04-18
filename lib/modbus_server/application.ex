@@ -32,8 +32,6 @@ defmodule ModbusServer.Application do
       # {DynamicSupervisor, name: Tcp.Handler.DynamicSupervisor, strategy: :one_for_one},
     ]
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
     opts = [strategy: :one_for_one, name: ModbusServer.Supervisor]
     Supervisor.start_link(children, opts)
   end
