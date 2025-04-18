@@ -605,6 +605,8 @@ defmodule Modbus.Crc do
 
     {result, _} = System.cmd("/sbin/ip", ["-o", "-4", "addr", "list", interface])
 
+    Logger.info("get_ip: result: #{result}")
+
     result
     |> String.split(" ")
     |> Enum.at(6)

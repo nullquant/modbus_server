@@ -13,6 +13,8 @@ defmodule Tcp.DirectServer do
     Process.flag(:trap_exit, true)
     ip = Modbus.Crc.get_ip(interface)
 
+    Logger.info("Tcp.DirectServer: Accepting connections on ip #{ip}")
+
     {:ok, socket} =
       :gen_tcp.listen(port, [:binary, packet: 0, active: false, reuseaddr: true, ip: ip])
 
