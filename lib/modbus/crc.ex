@@ -601,11 +601,7 @@ defmodule Modbus.Crc do
   end
 
   def get_ip(interface) do
-    Logger.info("get_ip: #{interface}")
-
     {result, _} = System.cmd("/sbin/ip", ["-o", "-4", "addr", "list", interface])
-
-    Logger.info("get_ip: result: #{result}")
 
     result
     |> String.split(" ")

@@ -13,10 +13,16 @@ defmodule Tcp.DirectServer do
     Process.flag(:trap_exit, true)
     ip = Modbus.Crc.get_ip(interface)
 
-    Logger.info("Tcp.DirectServer: Accepting connections on ip #{ip}")
+    ip_tuple =
+      ip
+      |> String.split(".")
+      |> Enum.map(&String.to_integer/1)
+      |> List.to_tuple()
+
+    Logger.info("Tcp.DirectServer: Accepting connections on ip #{ip}, #{ip_tuple}")
 
     {:ok, socket} =
-      :gen_tcp.listen(port, [:binary, packet: 0, active: false, reuseaddr: true, ip: ip])
+      :gen_tcp.listen(port, [:binary, packet: 0, active: false, reuseaddr: true, ip: ip_tuple])
 
     Logger.info("Tcp.DirectServer: Accepting connections on port #{port}")
     send(self(), :accept)
