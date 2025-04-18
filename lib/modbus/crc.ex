@@ -598,4 +598,14 @@ defmodule Modbus.Crc do
 
     :erlang.iolist_to_binary(list)
   end
+
+  def get_ip(interface) do
+    {result, _} = System.cmd("/sbin/ip", ["-o", "-4", "addr", "list", interface])
+
+    result
+    |> String.split(" ")
+    |> Enum.at(6)
+    |> String.split("/")
+    |> Enum.at(0)
+  end
 end

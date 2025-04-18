@@ -18,11 +18,11 @@ defmodule ModbusServer.Wifi do
   @impl true
   def handle_info(:read, state) do
     Logger.info("(#{__MODULE__}): Read WiFi SSIDs")
-    state = read_wifi(state)
+    state = wifi_scan(state)
     {:noreply, state}
   end
 
-  defp read_wifi(state) do
+  defp wifi_scan(state) do
     Process.send_after(self(), :read, 5000)
 
     {result, 0} = System.cmd("nmcli", ["-t", "device", "wifi"])
@@ -47,7 +47,7 @@ defmodule ModbusServer.Wifi do
           ""
 
         _ ->
-          read_ip("wlan0")
+          Modbus.Crc.get_ip("wlan0")
       end
 
     GenServer.cast(
@@ -63,16 +63,6 @@ defmodule ModbusServer.Wifi do
     |> write_ssids()
 
     %{state | connected: connected, ssid: not_connected, ip: ip}
-  end
-
-  defp read_ip(interface) do
-    {result, _} = System.cmd("/sbin/ip", ["-o", "-4", "addr", "list", interface])
-
-    result
-    |> String.split(" ")
-    |> Enum.at(6)
-    |> String.split("/")
-    |> Enum.at(0)
   end
 
   defp write_ssids([ssid1, ssid2, ssid3, ssid4, ssid5, ssid6, ssid7, ssid8]) do
