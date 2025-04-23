@@ -44,4 +44,7 @@ defmodule Tcp.DirectHandler do
 
   @impl true
   def terminate(:normal, _state), do: nil
+
+  @impl true
+  def terminate(:shutdown, _state), do: nil
 end
