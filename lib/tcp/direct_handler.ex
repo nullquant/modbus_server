@@ -1,4 +1,4 @@
-defmodule Tcp.Handler do
+defmodule Tcp.DirectHandler do
   @moduledoc """
   A worker for each Modbus Client, handles Client requests.
   """
@@ -12,24 +12,14 @@ defmodule Tcp.Handler do
   @impl true
   def init(args) do
     socket = Map.get(args, :socket)
-    slave = Map.get(args, :slave)
-    role = Map.get(args, :role)
     :inet.setopts(socket, active: true)
-    {:ok, %{socket: socket, slave: slave, role: role}}
+    {:ok, %{socket: socket}}
   end
 
   @impl true
-  def handle_info({:tcp, socket, data}, %{slave: slave, role: role} = state) do
+  def handle_info({:tcp, _socket, data}, state) do
     Logger.info("(#{__MODULE__}): Received data: #{inspect(data, base: :hex)}")
-
-    case Modbus.Tcp.parse(slave, role, data) do
-      :none ->
-        nil
-
-      {_, response} ->
-        :ok = :gen_tcp.send(socket, response)
-    end
-
+    IO.puts("(#{__MODULE__}): Received data: #{inspect(data)}")
     {:noreply, state}
   end
 

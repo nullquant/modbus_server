@@ -19,34 +19,35 @@ defmodule Tcp.DirectServer do
       |> Enum.map(&String.to_integer/1)
       |> List.to_tuple()
 
-    # , ip: ip_tuple])
     {:ok, socket} =
-      :gen_tcp.listen(port, [:binary, packet: 0, active: false, reuseaddr: true])
+      :gen_tcp.listen(port, [:binary, packet: 0, active: false, reuseaddr: true, ip: ip_tuple])
 
     Logger.info(
       "Tcp.DirectServer: Accepting connections at ip #{inspect(ip_tuple)} on port #{port}"
     )
 
     send(self(), :accept)
-    {:ok, %{socket: socket, ip: ip_tuple}}
+    {:ok, %{socket: socket}}
   end
 
   @impl true
-  def handle_info(:accept, %{socket: socket, ip: _ip_tuple} = state) do
-    {:ok, _client} = :gen_tcp.accept(socket)
+  def handle_info(:accept, %{socket: socket} = state) do
+    {:ok, client} = :gen_tcp.accept(socket)
     Logger.info("Tcp.DirectServer: Accepted new connection")
 
-    # case DynamicSupervisor.start_child(Tcp.Handler.DynamicSupervisor, %{
-    #       id: Tcp.Handler,
-    #       start: {Tcp.Handler, :start_link, [%{socket: client, slave: slave, role: role}]},
-    #       type: :worker
-    #     }) do
-    #  {:ok, pid} -> :gen_tcp.controlling_process(client, pid)
-    #  {:error, reason} -> Logger.info("Tcp.Server: DynamicSupervisor error #{inspect(reason)}")
-    # end
+    case DynamicSupervisor.start_child(Tcp.DirectHandler.DynamicSupervisor, %{
+           id: Tcp.DirectHandler,
+           start: {Tcp.DirectHandler, :start_link, [%{socket: client}]},
+           type: :worker
+         }) do
+      {:ok, pid} ->
+        :gen_tcp.controlling_process(client, pid)
 
-    # {:noreply, %{state | socket: socket}}
-    {:stop, {:normal, "TCP error: out"}, state}
+      {:error, reason} ->
+        Logger.info("Tcp.DirectServer: DynamicSupervisor error #{inspect(reason)}")
+    end
+
+    {:noreply, %{state | socket: socket}}
   end
 
   @impl true

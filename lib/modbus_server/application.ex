@@ -28,8 +28,8 @@ defmodule ModbusServer.Application do
              {Application.get_env(:modbus_server, :eth0_iface),
               Application.get_env(:modbus_server, :eth0_port)}
            ]}
-      }
-      # {DynamicSupervisor, name: Tcp.Handler.DynamicSupervisor, strategy: :one_for_one},
+      },
+      {DynamicSupervisor, name: Tcp.DirectHandler.DynamicSupervisor, strategy: :one_for_one}
     ]
 
     opts = [strategy: :one_for_one, name: ModbusServer.Supervisor]
