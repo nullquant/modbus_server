@@ -19,8 +19,9 @@ defmodule Tcp.DirectServer do
       |> Enum.map(&String.to_integer/1)
       |> List.to_tuple()
 
+    # , ip: ip_tuple])
     {:ok, socket} =
-      :gen_tcp.listen(port, [:binary, packet: 0, active: false, reuseaddr: true, ip: ip_tuple])
+      :gen_tcp.listen(port, [:binary, packet: 0, active: false, reuseaddr: true])
 
     Logger.info(
       "Tcp.DirectServer: Accepting connections at ip #{inspect(ip_tuple)} on port #{port}"
