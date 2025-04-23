@@ -41,10 +41,4 @@ defmodule Tcp.DirectHandler do
     :gen_tcp.close(state.socket)
     {:stop, {:normal, "TCP error: timout"}, state}
   end
-
-  @impl true
-  def terminate(:normal, _state), do: nil
-
-  @impl true
-  def terminate(:shutdown, _state), do: nil
 end
