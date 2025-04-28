@@ -76,6 +76,27 @@ defmodule ModbusServer.EtsServer do
   end
 
   @impl true
+  def handle_cast({:set_modbus_string, address, data, len}, state) do
+    Logger.info("EtsServer: Set modbus string #{inspect(data)} to address #{address}")
+    set_string(address, data, len, :modbus)
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_cast({:set_float, address, value}, state) do
+    Logger.info("EtsServer: Set float #{inspect(value)} to address #{address}")
+    set_float(address, value)
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_cast({:set_integer, address, value}, state) do
+    Logger.info("EtsServer: Set integer #{inspect(value)} to address #{address}")
+    set_integer(address, value)
+    {:noreply, state}
+  end
+
+  @impl true
   def handle_call({:read, address, len}, _from, state) do
     # Logger.info("EtsServer: Read from address #{address}:#{len}")
 

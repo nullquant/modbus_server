@@ -26,10 +26,10 @@ defmodule ModbusServer.Application do
         id: ModbusServer.CloudClient,
         start: {ModbusServer.CloudClient, :start_link, [0]}
       },
-      # %{
-      #  id: ModbusServer.Wifi,
-      #  start: {ModbusServer.Wifi, :start_link, [0]}
-      # },
+      %{
+        id: ModbusServer.Wifi,
+        start: {ModbusServer.Wifi, :start_link, [0]}
+      },
       {ThousandIsland,
        port: panel_port,
        handler_module: ModbusServer.PanelHandler,
