@@ -72,7 +72,7 @@ defmodule ModbusServer.Wifi do
               "connect",
               ssid,
               "password",
-              "\"" <> password <> "\""
+              password
             ])
 
           IO.puts("connect : #{inspect(result)} , #{inspect(res)}")
