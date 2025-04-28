@@ -28,7 +28,7 @@ defmodule ModbusServer.Gpio do
     {result, 0} =
       System.cmd("gpio", ["read", Application.get_env(:modbus_server, :gpio_stop_input)])
 
-    {int_value, ""} = Integer.parse(result)
+    {int_value, _} = Integer.parse(result)
 
     IO.puts("GPIO: #{inspect(int_value)}")
   end
