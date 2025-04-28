@@ -17,7 +17,7 @@ defmodule ModbusServer.Wifi do
 
   @impl true
   def handle_info(:read, state) do
-    Logger.info("(#{__MODULE__}): Read WiFi SSIDs")
+    # Logger.info("(#{__MODULE__}): Read WiFi SSIDs")
     state = wifi_scan(state)
     {:noreply, state}
   end
@@ -32,28 +32,6 @@ defmodule ModbusServer.Wifi do
     # ssid_name = ssid_names[connect_read]
     # ssid_connected = ssid_name
     # command = 'nmcli -w 15 dev wifi connect "%s" password "%s"' % (ssid_name, password_value)
-    {:reply, ssid_list} =
-      GenServer.call(
-        ModbusServer.EtsServer,
-        {:read, Application.get_env(:modbus_server, :wifi_ssid_register), 32}
-      )
-
-    ssid =
-      ssid_list
-      |> List.to_string()
-      |> String.trim()
-
-    {:reply, password_list} =
-      GenServer.call(
-        ModbusServer.EtsServer,
-        {:read, Application.get_env(:modbus_server, :wifi_password_register), 16}
-      )
-
-    password =
-      password_list
-      |> List.to_string()
-      |> String.trim()
-
     case value do
       0 ->
         Logger.info("(#{__MODULE__}): Disconnect from WiFi")
@@ -61,6 +39,32 @@ defmodule ModbusServer.Wifi do
         IO.puts("disconnect : #{inspect(result)} , #{inspect(res)}")
 
       _ ->
+        {:reply, ssid_list} =
+          GenServer.call(
+            ModbusServer.EtsServer,
+            {:read, Application.get_env(:modbus_server, :wifi_ssid_register), 32}
+          )
+
+        IO.puts("ssid : #{inspect(ssid_list)}")
+
+        ssid =
+          ssid_list
+          |> List.to_string()
+          |> String.trim()
+
+        {:reply, password_list} =
+          GenServer.call(
+            ModbusServer.EtsServer,
+            {:read, Application.get_env(:modbus_server, :wifi_password_register), 16}
+          )
+
+        IO.puts("password : #{inspect(password_list)}")
+
+        password =
+          password_list
+          |> List.to_string()
+          |> String.trim()
+
         Logger.info("(#{__MODULE__}): Connect to WiFi #{ssid} : #{password}")
 
         {result, res} =

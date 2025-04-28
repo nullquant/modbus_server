@@ -45,7 +45,7 @@ defmodule ModbusServer.Gpio do
 
   @impl true
   def handle_info(:read, state) do
-    Logger.info("(#{__MODULE__}): Read GPIOs")
+    # Logger.info("(#{__MODULE__}): Read GPIOs")
     read_gpio(state)
     {:noreply, state}
   end
