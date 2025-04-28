@@ -15,10 +15,7 @@
     sudo create_ap --stop wlan0
 
 
-# Ethernet to WiFi
-    git clone https://github.com/garywill/linux-router.git
-    cd linux-router
-    sudo lnxrouter -i eth0
+# MODBUS SERVER
 
 # OrangePI Install
 
@@ -47,13 +44,34 @@ http://www.orangepi.org/orangepiwiki/index.php/Orange_Pi_Zero_3
 
     su - orangepi -c '/usr/local/bin/mix local.hex --force && /usr/local/bin/mix local.rebar --force'
 
+### Change user and password
+
+Enable root
+
+    sudo passwd root
+
+Logout and login as root. Change default user name:
+
+    usermod -l <username> orangepi
+    usermod -m -d /home/<username> <username>
+
+Logout and login with new user name. Change password:
+
+    passwd
+
+Lock root user
+
+    sudo passwd -l root 
+
 ### Install lnxrouter
 
     cd ~
     git clone https://github.com/garywill/linux-router.git
     sudo nano /etc/rc.local
 
-Add line (port 5900 for VNC):
+Add line:
 
-    /home/orangepi/linux-router/lnxrouter -i eth0 -g 192.168.128.1 --tp 5900 --daemon
+    /home/<username>/linux-router/lnxrouter -i eth0 -o wlan0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
+
+Proxy port 5900 for VNC
 

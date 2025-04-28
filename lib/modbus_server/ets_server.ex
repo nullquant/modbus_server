@@ -12,33 +12,27 @@ defmodule ModbusServer.EtsServer do
   def init(_args) do
     table = :ets.new(:modbus_table, [:set, :protected, :named_table])
 
-    # TRM500 registers
-    # "PV"
-    set_float(0, 20.0)
-    # "SP"
-    set_float(2, 0.0)
-    # "SP2"
-    set_float(4, 0.0)
-    # "SumSP"
-    set_float(6, 0.0)
-    # "Hyst"
-    set_float(8, 1.0)
-    # "U.Lo"
-    set_float(10, 0.0)
-    # "U.Hi"
-    set_float(12, 0.0)
-    # "PPV"
-    set_float(14, 0.0)
-    # "inp.F"
-    set_integer(16, 1)
-    # "di.st"
-    set_integer(17, 0)
-    # "di.rc"
-    set_integer(18, 1)
-    # "ID"
-    set_string(61572, Application.get_env(:modbus_server, :cloud_id), 18, :modbus)
-    # "Token"
-    set_string(61728, Application.get_env(:modbus_server, :cloud_token), 16, :modbus)
+    # TRM500 registers ("PV" 0, "SP" 2, "SP2" 4, SumSP" 6, "Hyst" 8, U.Lo" 10, "U.Hi" 12, "PPV" 14)
+    set_floats([0, 2, 4, 6, 8, 10, 12, 14], [20.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0])
+
+    # TRM500 registers ("inp.F" 16, "di.st" 17, di.rc" 18)
+    set_integers([16, 17, 18], [1, 0, 1])
+
+    # CLOUD "ID"
+    set_string(
+      Application.get_env(:modbus_server, :cloud_id_register),
+      Application.get_env(:modbus_server, :cloud_id),
+      18,
+      :modbus
+    )
+
+    # CLOUD "Token"
+    set_string(
+      Application.get_env(:modbus_server, :cloud_token_register),
+      Application.get_env(:modbus_server, :cloud_token),
+      16,
+      :modbus
+    )
 
     # Control registers
     # CLOUD_ON
@@ -122,10 +116,26 @@ defmodule ModbusServer.EtsServer do
       end)
   end
 
+  defp set_floats([], []) do
+  end
+
+  defp set_floats([address | address_list], [value | value_list]) do
+    set_float(address, value)
+    set_floats(address_list, value_list)
+  end
+
   defp set_float(address, value) do
     [w0, w1] = Modbus.IEEE754.to_2_regs(value, :be)
     :ets.insert(:modbus_table, {address, w1})
     :ets.insert(:modbus_table, {address + 1, w0})
+  end
+
+  defp set_integers([], []) do
+  end
+
+  defp set_integers([address | address_list], [value | value_list]) do
+    set_integer(address, value)
+    set_integers(address_list, value_list)
   end
 
   defp set_integer(address, value) do
