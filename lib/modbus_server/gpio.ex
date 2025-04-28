@@ -68,7 +68,7 @@ defmodule ModbusServer.Gpio do
 
     GenServer.cast(
       ModbusServer.EtsServer,
-      {:set_modbus_string, Application.get_env(:modbus_server, :gpio_stop_register), int_value}
+      {:set_integer, Application.get_env(:modbus_server, :gpio_stop_register), int_value}
     )
   end
 end
