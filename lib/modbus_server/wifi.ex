@@ -23,7 +23,7 @@ defmodule ModbusServer.Wifi do
   end
 
   @impl true
-  def handle_info({:set, value}, state) do
+  def handle_cast({:set, value}, state) do
     # nmcli dev disconnect wlan0
     # nmcli dev wifi connect "XTTKmodel" password "xttk2019"
     # nmcli -w 10 dev wifi connect "NETGEAR L" password "abcdefgh"             ### timeout = 10 sec
