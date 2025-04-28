@@ -56,10 +56,13 @@ defmodule ModbusServer.Wifi do
 
     case value do
       0 ->
+        Logger.info("(#{__MODULE__}): Disconnect from WiFi")
         {result, res} = System.cmd("nmcli", ["device", "disconnect", "wlan0"])
         IO.puts("disconnect : #{inspect(result)} , #{inspect(res)}")
 
       _ ->
+        Logger.info("(#{__MODULE__}): Connect to WiFi #{ssid} : #{password}")
+
         {result, res} =
           System.cmd("nmcli", [
             "-w",
