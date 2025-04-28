@@ -1,4 +1,4 @@
-defmodule Tcp.CloudClient do
+defmodule ModbusServer.CloudClient do
   @moduledoc """
   Client that sends info into Cloud
   """

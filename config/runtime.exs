@@ -11,7 +11,7 @@ source!([
   System.get_env()
 ])
 
-config :logger, :default_formatter, format: "$time [$level] $message\n"
+config :logger, :default_formatter, format: "$date $time [$level] $message\n"
 
 config :logger, :default_handler,
   config: [
@@ -30,6 +30,8 @@ config :modbus_server,
   cloud_host: env!("CLOUD_HOST", :string),
   cloud_port: env!("CLOUD_PORT", :integer),
   cloud_slave: env!("CLOUD_SLAVE", :integer),
+  cloud_id: env!("CLOUD_ID", :string),
+  cloud_token: env!("CLOUD_TOKEN", :string),
   cloud_on_register: env!("CLOUD_ON_REGISTER", :integer),
   wifi_command_register: env!("WIFI_COMMAND_REGISTER", :integer),
   wifi_ip_register: env!("WIFI_IP_REGISTER", :integer),

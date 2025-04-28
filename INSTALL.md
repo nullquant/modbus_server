@@ -46,3 +46,14 @@ http://www.orangepi.org/orangepiwiki/index.php/Orange_Pi_Zero_3
 ### Install local Elixir hex and rebar for the user
 
     su - orangepi -c '/usr/local/bin/mix local.hex --force && /usr/local/bin/mix local.rebar --force'
+
+### Install lnxrouter
+
+    cd ~
+    git clone https://github.com/garywill/linux-router.git
+    sudo nano /etc/rc.local
+
+Add line (port 5900 for VNC):
+
+    /home/orangepi/linux-router/lnxrouter -i eth0 -g 192.168.128.1 --tp 5900 --daemon
+

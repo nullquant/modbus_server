@@ -36,9 +36,9 @@ defmodule ModbusServer.EtsServer do
     # "di.rc"
     set_integer(18, 1)
     # "ID"
-    set_string(61572, "94606191032457742", 18, :modbus)
+    set_string(61572, Application.get_env(:modbus_server, :cloud_id), 18, :modbus)
     # "Token"
-    set_string(61728, "GQ0ODHMO", 16, :modbus)
+    set_string(61728, Application.get_env(:modbus_server, :cloud_token), 16, :modbus)
 
     # Control registers
     # CLOUD_ON
