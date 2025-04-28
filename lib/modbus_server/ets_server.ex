@@ -56,6 +56,10 @@ defmodule ModbusServer.EtsServer do
     set_string(Application.get_env(:modbus_server, :wifi_ssid7_register), "", 32)
     set_string(Application.get_env(:modbus_server, :wifi_ssid8_register), "", 32)
 
+    # GPIO
+    set_integer(Application.get_env(:modbus_server, :gpio_stop_register), 0)
+    set_integer(Application.get_env(:modbus_server, :gpio_fan_register), 0)
+
     Logger.info("EtsServer: initialization")
     {:ok, %{data: table}}
   end

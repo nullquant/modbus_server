@@ -11,8 +11,20 @@ defmodule ModbusServer.Gpio do
 
   @impl true
   def init(_args) do
+    {_, 0} =
+      System.cmd("gpio", ["mode", Application.get_env(:modbus_server, :gpio_stop_pin), "in"])
+
+    {_, 0} =
+      System.cmd("gpio", ["mode", Application.get_env(:modbus_server, :gpio_stop_pin), "down"])
+
+    {_, 0} =
+      System.cmd("gpio", ["mode", Application.get_env(:modbus_server, :gpio_fan_pin), "out"])
+
+    {_, 0} =
+      System.cmd("gpio", ["write", Application.get_env(:modbus_server, :gpio_fan_pin), "0"])
+
     Process.send_after(self(), :read, 1000)
-    {:ok, %{connected: [], ssid: [], ip: ""}}
+    {:ok, ""}
   end
 
   @impl true
@@ -22,14 +34,25 @@ defmodule ModbusServer.Gpio do
     {:noreply, state}
   end
 
+  @impl true
+  def handle_info({:write, pin, value}, state) do
+    {_, 0} =
+      System.cmd("gpio", ["write", to_string(pin), to_string(value)])
+
+    {:noreply, state}
+  end
+
   defp read_gpio(_state) do
-    Process.send_after(self(), :read, 5000)
+    Process.send_after(self(), :read, 500)
 
     {result, 0} =
-      System.cmd("gpio", ["read", Application.get_env(:modbus_server, :gpio_stop_input)])
+      System.cmd("gpio", ["read", to_string(Application.get_env(:modbus_server, :gpio_stop_pin))])
 
     {int_value, _} = Integer.parse(result)
 
-    IO.puts("GPIO: #{inspect(int_value)}")
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_modbus_string, Application.get_env(:modbus_server, :gpio_stop_register), int_value}
+    )
   end
 end

@@ -60,6 +60,22 @@ defmodule ModbusServer.PanelHandler do
     {:ok}
   end
 
+  defp parse_request(["w", "fan", value]) do
+    {int_value, ""} = Integer.parse(value)
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, Application.get_env(:modbus_server, :gpio_fan_register), int_value}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:write, Application.get_env(:modbus_server, :gpio_fan_pin), int_value}
+    )
+
+    {:ok}
+  end
+
   defp parse_request(["w", "id", value]) do
     GenServer.cast(
       ModbusServer.EtsServer,
@@ -105,6 +121,16 @@ defmodule ModbusServer.PanelHandler do
     )
 
     {:ok}
+  end
+
+  defp parse_request(["r", "stop"]) do
+    case GenServer.call(
+           ModbusServer.EtsServer,
+           {:read, Application.get_env(:modbus_server, :gpio_stop_register), 1}
+         ) do
+      {:error} -> {:error}
+      {:reply, data} -> {:reply, List.to_string(data)}
+    end
   end
 
   defp parse_request(["r", "ip"]) do
