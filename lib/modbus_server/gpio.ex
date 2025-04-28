@@ -12,16 +12,32 @@ defmodule ModbusServer.Gpio do
   @impl true
   def init(_args) do
     {_, 0} =
-      System.cmd("gpio", ["mode", Application.get_env(:modbus_server, :gpio_stop_pin), "in"])
+      System.cmd("gpio", [
+        "mode",
+        to_string(Application.get_env(:modbus_server, :gpio_stop_pin)),
+        "in"
+      ])
 
     {_, 0} =
-      System.cmd("gpio", ["mode", Application.get_env(:modbus_server, :gpio_stop_pin), "down"])
+      System.cmd("gpio", [
+        "mode",
+        to_string(Application.get_env(:modbus_server, :gpio_stop_pin)),
+        "down"
+      ])
 
     {_, 0} =
-      System.cmd("gpio", ["mode", Application.get_env(:modbus_server, :gpio_fan_pin), "out"])
+      System.cmd("gpio", [
+        "mode",
+        to_string(Application.get_env(:modbus_server, :gpio_fan_pin)),
+        "out"
+      ])
 
     {_, 0} =
-      System.cmd("gpio", ["write", Application.get_env(:modbus_server, :gpio_fan_pin), "0"])
+      System.cmd("gpio", [
+        "write",
+        to_string(Application.get_env(:modbus_server, :gpio_fan_pin)),
+        "0"
+      ])
 
     Process.send_after(self(), :read, 1000)
     {:ok, ""}
