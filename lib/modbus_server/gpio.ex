@@ -25,8 +25,11 @@ defmodule ModbusServer.Gpio do
   defp read_gpio(_state) do
     Process.send_after(self(), :read, 5000)
 
-    {result, 0} = System.cmd("gpio", ["read", "2"])
+    {result, 0} =
+      System.cmd("gpio", ["read", Application.get_env(:modbus_server, :gpio_stop_input)])
 
-    IO.puts("GPIO: #{inspect(result)}")
+    {int_value, ""} = Integer.parse(result)
+
+    IO.puts("GPIO: #{inspect(int_value)}")
   end
 end

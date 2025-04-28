@@ -46,4 +46,5 @@ config :modbus_server,
   wifi_ssid5_register: env!("WIFI_SSID5_REGISTER", :integer),
   wifi_ssid6_register: env!("WIFI_SSID6_REGISTER", :integer),
   wifi_ssid7_register: env!("WIFI_SSID7_REGISTER", :integer),
-  wifi_ssid8_register: env!("WIFI_SSID8_REGISTER", :integer)
+  wifi_ssid8_register: env!("WIFI_SSID8_REGISTER", :integer),
+  gpio_stop_input: env!("GPIO_STOP_INPUT", :string)
