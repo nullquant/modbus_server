@@ -134,7 +134,7 @@ defmodule ModbusServer.PanelHandler do
            {:read, Application.get_env(:modbus_server, :gpio_stop_register), 1}
          ) do
       {:error} -> {:error}
-      {:reply, data} -> {:reply, List.to_string(data)}
+      data -> {:reply, List.to_string(data)}
     end
   end
 
@@ -144,7 +144,7 @@ defmodule ModbusServer.PanelHandler do
            {:read, Application.get_env(:modbus_server, :wifi_ip_register), 16}
          ) do
       {:error} -> {:error}
-      {:reply, data} -> {:reply, List.to_string(data)}
+      data -> {:reply, List.to_string(data)}
     end
   end
 
@@ -166,7 +166,7 @@ defmodule ModbusServer.PanelHandler do
            {:read, address, 32}
          ) do
       {:error} -> {:error}
-      {:reply, data} -> {:reply, List.to_string(data)}
+      data -> {:reply, List.to_string(data)}
     end
   end
 end

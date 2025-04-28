@@ -23,7 +23,7 @@ defmodule ModbusServer.Wifi do
   end
 
   @impl true
-  def handle_cast({:set, value}, state) do
+  def handle_cast({:set, value}, %{connected: connected} = state) do
     # nmcli dev disconnect wlan0
     # nmcli dev wifi connect "XTTKmodel" password "xttk2019"
     # nmcli -w 10 dev wifi connect "NETGEAR L" password "abcdefgh"             ### timeout = 10 sec
@@ -34,52 +34,49 @@ defmodule ModbusServer.Wifi do
     # command = 'nmcli -w 15 dev wifi connect "%s" password "%s"' % (ssid_name, password_value)
     case value do
       0 ->
-        Logger.info("(#{__MODULE__}): Disconnect from WiFi")
-        {result, res} = System.cmd("nmcli", ["device", "disconnect", "wlan0"])
-        IO.puts("disconnect : #{inspect(result)} , #{inspect(res)}")
+        if connected != [] do
+          Logger.info("(#{__MODULE__}): Disconnect from WiFi")
+          {_, 0} = System.cmd("nmcli", ["device", "disconnect", "wlan0"])
+        end
 
       _ ->
-        {:reply, ssid_list} =
-          GenServer.call(
-            ModbusServer.EtsServer,
-            {:read, Application.get_env(:modbus_server, :wifi_ssid_register), 32}
-          )
+        if connected == [] do
+          ssid =
+            GenServer.call(
+              ModbusServer.EtsServer,
+              {:read, Application.get_env(:modbus_server, :wifi_ssid_register), 32}
+            )
+            |> List.to_string()
+            |> String.trim()
 
-        IO.puts("ssid : #{inspect(ssid_list)}")
+          IO.puts("ssid : #{inspect(ssid)}")
 
-        ssid =
-          ssid_list
-          |> List.to_string()
-          |> String.trim()
+          password =
+            GenServer.call(
+              ModbusServer.EtsServer,
+              {:read, Application.get_env(:modbus_server, :wifi_password_register), 16}
+            )
+            |> List.to_string()
+            |> String.trim()
 
-        {:reply, password_list} =
-          GenServer.call(
-            ModbusServer.EtsServer,
-            {:read, Application.get_env(:modbus_server, :wifi_password_register), 16}
-          )
+          IO.puts("password : #{inspect(password)}")
 
-        IO.puts("password : #{inspect(password_list)}")
+          Logger.info("(#{__MODULE__}): Connect to WiFi #{ssid} : #{password}")
 
-        password =
-          password_list
-          |> List.to_string()
-          |> String.trim()
+          {result, res} =
+            System.cmd("nmcli", [
+              "-w",
+              "15",
+              "device",
+              "wifi",
+              "connect",
+              "\"" <> ssid <> "\"",
+              "password",
+              "\"" <> password <> "\""
+            ])
 
-        Logger.info("(#{__MODULE__}): Connect to WiFi #{ssid} : #{password}")
-
-        {result, res} =
-          System.cmd("nmcli", [
-            "-w",
-            "15",
-            "device",
-            "wifi",
-            "connect",
-            "\"" <> ssid <> "\"",
-            "password",
-            "\"" <> password <> "\""
-          ])
-
-        IO.puts("connect : #{inspect(result)} , #{inspect(res)}")
+          IO.puts("connect : #{inspect(result)} , #{inspect(res)}")
+        end
     end
 
     {:noreply, state}
