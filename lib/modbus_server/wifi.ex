@@ -47,7 +47,7 @@ defmodule ModbusServer.Wifi do
               {:read, Application.get_env(:modbus_server, :wifi_ssid_register), 32}
             )
             |> List.to_string()
-            |> String.trim()
+            |> String.trim(<<0>>)
 
           IO.puts("ssid : #{inspect(ssid)}")
 
@@ -57,7 +57,7 @@ defmodule ModbusServer.Wifi do
               {:read, Application.get_env(:modbus_server, :wifi_password_register), 16}
             )
             |> List.to_string()
-            |> String.trim()
+            |> String.trim(<<0>>)
 
           IO.puts("password : #{inspect(password)}")
 
