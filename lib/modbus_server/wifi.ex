@@ -70,7 +70,7 @@ defmodule ModbusServer.Wifi do
               "device",
               "wifi",
               "connect",
-              "\"" <> ssid <> "\"",
+              ssid,
               "password",
               "\"" <> password <> "\""
             ])
