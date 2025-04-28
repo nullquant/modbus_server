@@ -69,7 +69,7 @@ defmodule ModbusServer.PanelHandler do
     )
 
     GenServer.cast(
-      ModbusServer.EtsServer,
+      ModbusServer.Gpio,
       {:write, Application.get_env(:modbus_server, :gpio_fan_pin), int_value}
     )
 
@@ -118,6 +118,11 @@ defmodule ModbusServer.PanelHandler do
     GenServer.cast(
       ModbusServer.EtsServer,
       {:set_integer, Application.get_env(:modbus_server, :wifi_command_register), int_value}
+    )
+
+    GenServer.cast(
+      ModbusServer.Wifi,
+      {:set, int_value}
     )
 
     {:ok}

@@ -22,6 +22,62 @@ defmodule ModbusServer.Wifi do
     {:noreply, state}
   end
 
+  @impl true
+  def handle_info({:set, value}, state) do
+    # nmcli dev disconnect wlan0
+    # nmcli dev wifi connect "XTTKmodel" password "xttk2019"
+    # nmcli -w 10 dev wifi connect "NETGEAR L" password "abcdefgh"             ### timeout = 10 sec
+    # nmcli exits with status 0 if it succeeds, a value greater than 0 is returned if an error occurs.
+
+    # ssid_name = ssid_names[connect_read]
+    # ssid_connected = ssid_name
+    # command = 'nmcli -w 15 dev wifi connect "%s" password "%s"' % (ssid_name, password_value)
+    {:reply, ssid_list} =
+      GenServer.call(
+        ModbusServer.EtsServer,
+        {:read, Application.get_env(:modbus_server, :wifi_ssid_register), 32}
+      )
+
+    ssid =
+      ssid_list
+      |> List.to_string()
+      |> String.trim()
+
+    {:reply, password_list} =
+      GenServer.call(
+        ModbusServer.EtsServer,
+        {:read, Application.get_env(:modbus_server, :wifi_password_register), 16}
+      )
+
+    password =
+      password_list
+      |> List.to_string()
+      |> String.trim()
+
+    case value do
+      0 ->
+        {result, res} = System.cmd("nmcli", ["device", "disconnect", "wlan0"])
+        IO.puts("disconnect : #{inspect(result)} , #{inspect(res)}")
+
+      _ ->
+        {result, res} =
+          System.cmd("nmcli", [
+            "-w",
+            "15",
+            "device",
+            "wifi",
+            "connect",
+            "\"" <> ssid <> "\"",
+            "password",
+            "\"" <> password <> "\""
+          ])
+
+        IO.puts("connect : #{inspect(result)} , #{inspect(res)}")
+    end
+
+    {:noreply, state}
+  end
+
   defp wifi_scan(state) do
     Process.send_after(self(), :read, 5000)
 
