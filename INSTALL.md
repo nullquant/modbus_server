@@ -1,8 +1,10 @@
 # MODBUS SERVER
 
-# OrangePI Install
+### OrangePI Install
 
-http://www.orangepi.org/orangepiwiki/index.php/Orange_Pi_Zero_3
+Manual: http://www.orangepi.org/orangepiwiki/index.php/Orange_Pi_Zero_3
+
+Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-Zero-3.html
 
 ### Update
 
