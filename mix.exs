@@ -4,7 +4,7 @@ defmodule ModbusServer.MixProject do
   def project do
     [
       app: :modbus_server,
-      version: "0.1.0",
+      version: "0.6.2",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -33,8 +33,6 @@ defmodule ModbusServer.MixProject do
     [
       {:dotenvy, "~> 1.0.0"},
       {:thousand_island, "~> 1.0"}
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]
   end
 end

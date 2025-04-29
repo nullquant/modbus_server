@@ -51,7 +51,7 @@ defmodule ModbusServer.Gpio do
   end
 
   @impl true
-  def handle_info({:write, pin, value}, state) do
+  def handle_cast({:write, pin, value}, state) do
     {_, 0} =
       System.cmd("gpio", ["write", to_string(pin), to_string(value)])
 

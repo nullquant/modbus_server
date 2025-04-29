@@ -35,6 +35,8 @@ defmodule ModbusServer.PanelHandler do
       {:set_float, 0, float_value}
     )
 
+    GenServer.cast(ModbusServer.FileWriter, {:write})
+
     {:ok}
   end
 
@@ -44,6 +46,39 @@ defmodule ModbusServer.PanelHandler do
     GenServer.cast(
       ModbusServer.EtsServer,
       {:set_float, 2, float_value}
+    )
+
+    {:ok}
+  end
+
+  defp parse_request(["w", "i1", value]) do
+    {float_value, ""} = Float.parse(value)
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_float, Application.get_env(:modbus_server, :i1_register), float_value}
+    )
+
+    {:ok}
+  end
+
+  defp parse_request(["w", "i2", value]) do
+    {float_value, ""} = Float.parse(value)
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_float, Application.get_env(:modbus_server, :i2_register), float_value}
+    )
+
+    {:ok}
+  end
+
+  defp parse_request(["w", "i3", value]) do
+    {float_value, ""} = Float.parse(value)
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_float, Application.get_env(:modbus_server, :i3_register), float_value}
     )
 
     {:ok}

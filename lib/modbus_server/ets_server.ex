@@ -34,6 +34,12 @@ defmodule ModbusServer.EtsServer do
       :modbus
     )
 
+    # Currents
+
+    set_float(Application.get_env(:modbus_server, :i1_register), 0.0)
+    set_float(Application.get_env(:modbus_server, :i2_register), 0.0)
+    set_float(Application.get_env(:modbus_server, :i3_register), 0.0)
+
     # Control registers
     # CLOUD_ON
     set_integer(Application.get_env(:modbus_server, :cloud_on_register), 0)
@@ -98,6 +104,22 @@ defmodule ModbusServer.EtsServer do
     Logger.info("EtsServer: Set integer #{inspect(value)} to address #{address}")
     set_integer(address, value)
     {:noreply, state}
+  end
+
+  @impl true
+  def handle_call({:get_float, address}, _from, state) do
+    reply =
+      case check_request(address, 2) do
+        true ->
+          w1 = :ets.lookup(:modbus_table, address)
+          w0 = :ets.lookup(:modbus_table, address + 1)
+          Modbus.IEEE754.from_2_regs(w0, w1, :be)
+
+        false ->
+          :error
+      end
+
+    {:reply, reply, state}
   end
 
   @impl true
