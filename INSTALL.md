@@ -18,7 +18,7 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
 
 ### Install Erlang 26.2
 
-    sudo apt install -y -f erlang=1:26.2.5.9-1rmq1ppa1~ubuntu22.04.1
+    sudo apt install -y -f erlang=1:26.2.5.11-1rmq1ppa1~ubuntu22.04.1
 
 ### Install Elixir 1.18.3
 
