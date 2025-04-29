@@ -33,38 +33,23 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
     ln -s /elixir/bin/mix /usr/local/bin/mix
     ln -s /elixir/bin/iex /usr/local/bin/iex
 
-### Change user and password
-
-Enable root
-
-    sudo passwd root
-
-Logout and login as root. Change default user name:
-
-    usermod -l <username> orangepi
-    usermod -m -d /home/<username> <username>
-
-Logout and login with new user name. Change password:
+### Change password
 
     passwd
-
-Lock root user
-
-    sudo passwd -l root 
-
-### Install local Elixir hex and rebar for the user
-
-    su - <username> -c '/usr/local/bin/mix local.hex --force && /usr/local/bin/mix local.rebar --force'
 
 ### Install lnxrouter
 
     cd ~
     git clone https://github.com/garywill/linux-router.git
+
+### Install Modbus Server
+
+    cd ~
+    git clone https://github.com/nullquant/modbus_server.git
+
+
+    
     sudo nano /etc/rc.local
-
-
-
-
 Add line:
 
     /home/<username>/linux-router/lnxrouter -i eth0 -o wlan0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
