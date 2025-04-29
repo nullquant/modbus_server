@@ -111,8 +111,8 @@ defmodule ModbusServer.EtsServer do
     reply =
       case check_request(address, 2) do
         true ->
-          w1 = :ets.lookup(:modbus_table, address)
-          w0 = :ets.lookup(:modbus_table, address + 1)
+          [{_, w1}] = :ets.lookup(:modbus_table, address)
+          [{_, w0}] = :ets.lookup(:modbus_table, address + 1)
           Modbus.IEEE754.from_2_regs(w0, w1, :be)
 
         false ->
