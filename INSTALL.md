@@ -75,3 +75,4 @@ Add line:
 
 Proxy port 5900 for VNC
 
+    /home/xttk/modbus_server/_build/dev/rel/modbus_server/bin/modbus_server daemon
