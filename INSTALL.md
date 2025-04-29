@@ -46,7 +46,8 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
 
     cd ~
     git clone https://github.com/nullquant/modbus_server.git
-
+    cd modbus_server/envs
+    nano 
 
     
     sudo nano /etc/rc.local
