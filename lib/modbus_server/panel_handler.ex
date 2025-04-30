@@ -14,6 +14,7 @@ defmodule ModbusServer.PanelHandler do
         Logger.info("(#{__MODULE__}): error while parsing #{inspect(data)}")
 
       {:reply, reply} ->
+        IO.puts("#{inspect(reply)}")
         ThousandIsland.Socket.send(socket, reply)
     end
 
