@@ -1,4 +1,4 @@
-# MODBUS SERVER
+# MODBUS SERVER on OrangePI zero 3
 
 ### OrangePI Install
 
@@ -43,11 +43,11 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
     cd ~
     git clone https://github.com/nullquant/modbus_server.git
 
-Add private config:
+Add private config (CLOUD_HOST, CLOUD_PORT, CLOUD_ID, CLOUD_TOKEN, FTP_USER, FTP_PASSWORD):
 
     nano modbus_server/envs/.overrides.env
 
-Add RSA host key:
+Add SSH host key:
 
     ssh-keygen -q -N "" -t rsa -f priv/sftp_daemon/ssh_host_rsa_key
 
