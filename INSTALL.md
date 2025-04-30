@@ -47,18 +47,32 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
     cd ~
     git clone https://github.com/nullquant/modbus_server.git
     cd modbus_server/envs
-    nano 
+    nano .overrides.env
 
-    
+Add config lines.
+
+### Setup vsftp
+
+    sudo useradd ftpuser
+    sudo passwd ftpuser  
+    sudo usermod ftpuser -s /sbin/nologin
+    mkdir /home/orangepi/modbus_server/data
+    sudo usermod ftpuser -d /home/orangepi/modbus_server/data/
+
+ssh-keygen -t rsa -f priv/sftp_daemon/ssh_host_rsa_key
+
+
+### Setup sturtup
+
     sudo nano /etc/rc.local
+
 Add line:
 
-    /home/<username>/linux-router/lnxrouter -i eth0 -o wlan0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
+    /home/orangepi/linux-router/lnxrouter -i eth0 -o wlan0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
+    /home/orangepi/modbus_server/_build/dev/rel/modbus_server/bin/modbus_server daemon
+
 
 Proxy port 5900 for VNC
-
-    /home/xttk/modbus_server/_build/dev/rel/modbus_server/bin/modbus_server daemon
-
 
 
 # SNIFFER

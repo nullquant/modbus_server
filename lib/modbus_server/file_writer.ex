@@ -11,17 +11,19 @@ defmodule ModbusServer.FileWriter do
 
   @impl true
   def init(_args) do
-    if not File.dir?("data") do
-      File.mkdir("data")
+    data_folder = Application.get_env(:modbus_server, :ftp_folder)
+
+    if not File.dir?(data_folder) do
+      File.mkdir(data_folder)
     end
 
-    files = File.ls!("data")
+    files = File.ls!(data_folder)
 
     if length(files) > Application.get_env(:modbus_server, :max_data_files) do
       files
       |> Enum.sort()
       |> Enum.take(length(files) - Application.get_env(:modbus_server, :max_data_files))
-      |> Enum.map(fn x -> Path.join("data", x) end)
+      |> Enum.map(fn x -> Path.join(data_folder, x) end)
       |> Enum.map(fn x -> File.rm!(x) end)
     end
 
@@ -63,7 +65,13 @@ defmodule ModbusServer.FileWriter do
       String.slice(datetime, 0..22) <>
         "," <> pv <> "," <> sp <> "," <> i1 <> "," <> i2 <> "," <> i3 <> "\n"
 
-    File.open("data/" <> String.slice(datetime, 0..9) <> ".csv", [:append])
+    File.open(
+      Path.join(
+        Application.get_env(:modbus_server, :ftp_folder),
+        String.slice(datetime, 0..9) <> ".csv"
+      ),
+      [:append]
+    )
     |> elem(1)
     |> IO.binwrite(data)
 

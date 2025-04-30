@@ -53,4 +53,8 @@ config :modbus_server,
   gpio_stop_pin: env!("GPIO_STOP_PIN", :integer),
   gpio_stop_register: env!("GPIO_STOP_REGISTER", :integer),
   gpio_fan_pin: env!("GPIO_FAN_PIN", :integer),
-  gpio_fan_register: env!("GPIO_FAN_REGISTER", :integer)
+  gpio_fan_register: env!("GPIO_FAN_REGISTER", :integer),
+  ftp_port: env!("FTP_PORT", :integer),
+  ftp_folder: env!("FTP_FOLDER", :string),
+  ftp_user: env!("FTP_USER", :string),
+  ftp_password: env!("FTP_PASSWORD", :string)
