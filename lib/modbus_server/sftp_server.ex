@@ -8,7 +8,8 @@ defmodule ModbusServer.SFTPServer do
     port = Application.get_env(:modbus_server, :ftp_port)
     system_folder = Path.join(:code.priv_dir(:modbus_server), "sftp_daemon")
 
-    data_folder = Application.get_env(:modbus_server, :ftp_folder)
+    data_folder =
+      Path.join(:code.priv_dir(:modbus_server), Application.get_env(:modbus_server, :ftp_folder))
 
     if not File.dir?(data_folder) do
       File.mkdir(data_folder)

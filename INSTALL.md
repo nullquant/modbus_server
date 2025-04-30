@@ -59,8 +59,7 @@ Add config lines.
     mkdir /home/orangepi/modbus_server/data
     sudo usermod ftpuser -d /home/orangepi/modbus_server/data/
 
-ssh-keygen -t rsa -f priv/sftp_daemon/ssh_host_rsa_key
-
+ssh-keygen -q -N "" -t rsa -f priv/sftp_daemon/ssh_host_rsa_key
 
 ### Setup sturtup
 

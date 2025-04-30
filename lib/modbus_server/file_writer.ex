@@ -11,7 +11,8 @@ defmodule ModbusServer.FileWriter do
 
   @impl true
   def init(_args) do
-    data_folder = Application.get_env(:modbus_server, :ftp_folder)
+    data_folder =
+      Path.join(:code.priv_dir(:modbus_server), Application.get_env(:modbus_server, :ftp_folder))
 
     if not File.dir?(data_folder) do
       File.mkdir(data_folder)
@@ -27,11 +28,11 @@ defmodule ModbusServer.FileWriter do
       |> Enum.map(fn x -> File.rm!(x) end)
     end
 
-    {:ok, ""}
+    {:ok, %{folder: data_folder}}
   end
 
   @impl true
-  def handle_cast({:write}, state) do
+  def handle_cast({:write}, %{folder: data_folder} = state) do
     pv = to_string(GenServer.call(ModbusServer.EtsServer, {:get_float, 0}))
     sp = to_string(GenServer.call(ModbusServer.EtsServer, {:get_float, 2}))
 
@@ -65,13 +66,7 @@ defmodule ModbusServer.FileWriter do
       String.slice(datetime, 0..22) <>
         "," <> pv <> "," <> sp <> "," <> i1 <> "," <> i2 <> "," <> i3 <> "\n"
 
-    File.open(
-      Path.join(
-        Application.get_env(:modbus_server, :ftp_folder),
-        String.slice(datetime, 0..9) <> ".csv"
-      ),
-      [:append]
-    )
+    File.open(Path.join(data_folder, String.slice(datetime, 0..9) <> ".csv"), [:append])
     |> elem(1)
     |> IO.binwrite(data)
 
