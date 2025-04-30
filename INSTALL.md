@@ -45,13 +45,17 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
 
 Add private config:
 
-    cd modbus_server/envs
-    nano .overrides.env
-
+    nano modbus_server/envs/.overrides.env
 
 Add RSA host key:
 
     ssh-keygen -q -N "" -t rsa -f priv/sftp_daemon/ssh_host_rsa_key
+
+Compile
+
+    mix deps.get
+    mix compile
+    mix release
 
 ### Setup startup
 

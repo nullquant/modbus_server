@@ -15,10 +15,6 @@ defmodule ModbusServer.Application do
       |> Enum.map(&String.to_integer/1)
       |> List.to_tuple()
 
-    sftp_port = Application.get_env(:modbus_server, :ftp_port)
-
-    Logger.info("(#{__MODULE__}): Starting SFTP server on #{sftp_port} port")
-
     ModbusServer.SFTPServer.start()
 
     Logger.info("(#{__MODULE__}): Listening from panel on #{panel_ip}:#{panel_port} port")

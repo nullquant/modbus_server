@@ -4,7 +4,7 @@ defmodule ModbusServer.MixProject do
   def project do
     [
       app: :modbus_server,
-      version: "0.7.0",
+      version: "0.7.8",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       deps: deps(),

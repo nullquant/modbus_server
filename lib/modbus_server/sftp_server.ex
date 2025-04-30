@@ -25,6 +25,8 @@ defmodule ModbusServer.SFTPServer do
       {:subsystems, [:ssh_sftpd.subsystem_spec([{:root, data_folder |> to_charlist}])]}
     ]
 
-    :ssh.daemon(port, opts)
+    res = :ssh.daemon(port, opts)
+
+    Logger.info("(#{__MODULE__}): Starting SFTP server on #{port} port: #{inspect(res)}")
   end
 end
