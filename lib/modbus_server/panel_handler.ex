@@ -6,8 +6,6 @@ defmodule ModbusServer.PanelHandler do
 
   @impl ThousandIsland.Handler
   def handle_data(data, socket, state) do
-    IO.puts("ThousandIsland got #{inspect(data)}")
-
     case parse(data) do
       {:ok} ->
         nil
@@ -16,7 +14,6 @@ defmodule ModbusServer.PanelHandler do
         Logger.info("(#{__MODULE__}): error while parsing #{inspect(data)}")
 
       {:reply, reply} ->
-        IO.puts("ThousandIsland reply #{inspect(reply)}")
         ThousandIsland.Socket.send(socket, reply)
     end
 
