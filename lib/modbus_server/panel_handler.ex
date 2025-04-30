@@ -192,9 +192,10 @@ defmodule ModbusServer.PanelHandler do
 
     {:reply,
      ssids <>
-       GenServer.call(
-         ModbusServer.EtsServer,
-         {:read, Application.get_env(:modbus_server, :wifi_ip_register), 16}
-       )}
+       (GenServer.call(
+          ModbusServer.EtsServer,
+          {:read, Application.get_env(:modbus_server, :wifi_ip_register), 16}
+        )
+        |> List.to_string())}
   end
 end
