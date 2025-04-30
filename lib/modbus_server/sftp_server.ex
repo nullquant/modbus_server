@@ -3,9 +3,6 @@ defmodule ModbusServer.SFTPServer do
 
   require Logger
 
-  @doc """
-  Starting the server.
-  """
   def start do
     # TODO: start the SSH daemon with the SFTP subsystem
     port = Application.get_env(:modbus_server, :ftp_port)

@@ -15,6 +15,8 @@ defmodule ModbusServer.Application do
       |> Enum.map(&String.to_integer/1)
       |> List.to_tuple()
 
+    ModbusServer.SFTPServer.start()
+
     Logger.info("(#{__MODULE__}): Listening from panel at #{panel_ip} on #{panel_port}")
 
     children = [
