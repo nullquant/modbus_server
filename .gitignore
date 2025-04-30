@@ -6,9 +6,6 @@
 /tmp/
 /.ipynb_checkpoints/
 
-/priv/data/*.*
-/priv/sftp_daemon/*.*
-
 *.overrides.env
 erl_crash.dump
 *.ez

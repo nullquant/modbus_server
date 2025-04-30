@@ -12,10 +12,6 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
     sudo apt update
     sudo apt upgrade
 
-### Install VSFTP
-
-    sudo apt install vsftpd
-
 ### Install Erlang 26.2
 
     sudo apt install -y -f erlang=1:26.2.5.11-1rmq1ppa1~ubuntu22.04.1
@@ -25,7 +21,7 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
     cd / 
     mkdir -p elixir 
     cd elixir 
-    wget -q https://github.com/elixir-lang/elixir/releases/download/v1.18.3/elixir-otp-26.zip
+    wget https://github.com/elixir-lang/elixir/releases/download/v1.18.3/elixir-otp-26.zip
     unzip elixir-otp-26.zip
     rm -f elixir-otp-26.zip
     ln -s /elixir/bin/elixirc /usr/local/bin/elixirc
@@ -46,26 +42,22 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
 
     cd ~
     git clone https://github.com/nullquant/modbus_server.git
+
+Add private config:
+
     cd modbus_server/envs
     nano .overrides.env
 
-Add config lines.
 
-### Setup vsftp
+Add RSA host key:
 
-    sudo useradd ftpuser
-    sudo passwd ftpuser  
-    sudo usermod ftpuser -s /sbin/nologin
-    mkdir /home/orangepi/modbus_server/data
-    sudo usermod ftpuser -d /home/orangepi/modbus_server/data/
+    ssh-keygen -q -N "" -t rsa -f priv/sftp_daemon/ssh_host_rsa_key
 
-ssh-keygen -q -N "" -t rsa -f priv/sftp_daemon/ssh_host_rsa_key
-
-### Setup sturtup
+### Setup startup
 
     sudo nano /etc/rc.local
 
-Add line:
+Add lines:
 
     /home/orangepi/linux-router/lnxrouter -i eth0 -o wlan0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
     /home/orangepi/modbus_server/_build/dev/rel/modbus_server/bin/modbus_server daemon
