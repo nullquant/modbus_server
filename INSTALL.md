@@ -63,7 +63,7 @@ Compile
 
 Add lines:
 
-    /home/orangepi/linux-router/lnxrouter -i eth0 -o wlan0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
+    /home/orangepi/linux-router/lnxrouter -i eth0 -o wlan0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1 --daemon
     /home/orangepi/modbus_server/_build/dev/rel/modbus_server/bin/modbus_server daemon
 
 
