@@ -66,8 +66,6 @@ defmodule ModbusServer.FileWriter do
       String.slice(datetime, 0..22) <>
         "," <> pv <> "," <> sp <> "," <> i1 <> "," <> i2 <> "," <> i3 <> "\n"
 
-    Logger.info("(#{__MODULE__}): write #{inspect(data)}")
-
     File.open(Path.join(data_folder, String.slice(datetime, 0..9) <> ".csv"), [:append])
     |> elem(1)
     |> IO.binwrite(data)
