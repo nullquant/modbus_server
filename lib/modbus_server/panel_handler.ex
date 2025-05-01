@@ -186,19 +186,13 @@ defmodule ModbusServer.PanelHandler do
         Application.get_env(:modbus_server, :wifi_ssid7_register),
         Application.get_env(:modbus_server, :wifi_ssid8_register)
       ]
-
-    Logger.info("(#{__MODULE__}): #{inspect(ssids)}")
-
-    ssid_names =
-      Enum.map(ssids, fn address ->
+      |> Enum.map(fn address ->
         GenServer.call(ModbusServer.EtsServer, {:read, address, 32}) |> List.to_string()
       end)
       |> Enum.join("")
 
-    Logger.info("(#{__MODULE__}): #{inspect(ssid_names)}")
-
     {:reply,
-     ssid_names <>
+     ssids <>
        (GenServer.call(
           ModbusServer.EtsServer,
           {:read, Application.get_env(:modbus_server, :wifi_ip_register), 16}
