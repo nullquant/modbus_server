@@ -6,6 +6,8 @@ defmodule ModbusServer.PanelHandler do
 
   @impl ThousandIsland.Handler
   def handle_data(data, socket, state) do
+    IO.puts("Got #{inspect(data)}")
+
     case parse(data) do
       {:ok} ->
         nil
@@ -198,5 +200,13 @@ defmodule ModbusServer.PanelHandler do
           {:read, Application.get_env(:modbus_server, :wifi_ip_register), 16}
         )
         |> List.to_string())}
+  end
+
+  defp parse_request(["disconnect"]) do
+    GenServer.cast(ModbusServer.Wifi, {:disconnect})
+  end
+
+  defp parse_request(["connect", ssid, password]) do
+    GenServer.cast(ModbusServer.Wifi, {:connect, ssid, password})
   end
 end

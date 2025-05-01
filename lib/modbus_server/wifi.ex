@@ -23,51 +23,36 @@ defmodule ModbusServer.Wifi do
   end
 
   @impl true
-  def handle_cast({:set, value}, %{connected: connected} = state) do
-    case value do
-      0 ->
-        if connected != [] do
-          Logger.info("(#{__MODULE__}): Disconnect from WiFi")
-          {_, 0} = System.cmd("nmcli", ["device", "disconnect", "wlan0"])
+  def handle_cast({:disconnect}, %{connected: connected} = state) do
+    if connected != [] do
+      Logger.info("(#{__MODULE__}): Disconnect from WiFi")
+      {_, 0} = System.cmd("nmcli", ["device", "disconnect", "wlan0"])
 
-          GenServer.cast(
-            ModbusServer.EtsServer,
-            {:set_string, Application.get_env(:modbus_server, :wifi_ip_register), "", 16}
-          )
-        end
+      GenServer.cast(
+        ModbusServer.EtsServer,
+        {:set_string, Application.get_env(:modbus_server, :wifi_ip_register), "", 16}
+      )
+    end
 
-      _ ->
-        if connected == [] do
-          ssid =
-            GenServer.call(
-              ModbusServer.EtsServer,
-              {:read, Application.get_env(:modbus_server, :wifi_ssid_register), 32}
-            )
-            |> List.to_string()
-            |> String.trim(<<0>>)
+    {:noreply, state}
+  end
 
-          password =
-            GenServer.call(
-              ModbusServer.EtsServer,
-              {:read, Application.get_env(:modbus_server, :wifi_password_register), 16}
-            )
-            |> List.to_string()
-            |> String.trim(<<0>>)
+  @impl true
+  def handle_cast({:connect, ssid, password}, %{connected: connected} = state) do
+    if connected == [] do
+      Logger.info("(#{__MODULE__}): Connect to WiFi #{ssid} : #{password}")
 
-          Logger.info("(#{__MODULE__}): Connect to WiFi #{ssid} : #{password}")
-
-          {_, 0} =
-            System.cmd("nmcli", [
-              "-w",
-              "15",
-              "device",
-              "wifi",
-              "connect",
-              ssid,
-              "password",
-              password
-            ])
-        end
+      {_, 0} =
+        System.cmd("nmcli", [
+          "-w",
+          "15",
+          "device",
+          "wifi",
+          "connect",
+          ssid,
+          "password",
+          password
+        ])
     end
 
     {:noreply, state}
