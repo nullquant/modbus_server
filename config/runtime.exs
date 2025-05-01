@@ -11,6 +11,18 @@ source!([
   System.get_env()
 ])
 
+config :logger, :default_formatter, format: "$date $time [$level] $message\n"
+
+config :logger, :default_handler,
+  config: [
+    file: ~c"modbus_server.log",
+    filesync_repeat_interval: 5000,
+    file_check: 5000,
+    max_no_bytes: 10_000_000,
+    max_no_files: 5,
+    compress_on_rotate: true
+  ]
+
 config :modbus_server,
   eth0_iface: env!("ETH0_IFACE", :string),
   eth0_port: env!("ETH0_PORT", :integer),
@@ -44,22 +56,3 @@ config :modbus_server,
   ftp_folder: env!("FTP_FOLDER", :string),
   ftp_user: env!("FTP_USER", :string),
   ftp_password: env!("FTP_PASSWORD", :string)
-
-config :logger, :default_formatter, format: "$date $time [$level] $message\n"
-
-config :logger, :default_handler,
-  config: [
-    file:
-      Path.join(
-        Path.join(
-          :code.priv_dir(:modbus_server),
-          env!("FTP_FOLDER", :string)
-        ),
-        ~c"server.log"
-      ),
-    filesync_repeat_interval: 5000,
-    file_check: 5000,
-    max_no_bytes: 10_000_000,
-    max_no_files: 5,
-    compress_on_rotate: true
-  ]
