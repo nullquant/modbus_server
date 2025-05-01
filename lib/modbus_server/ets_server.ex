@@ -43,14 +43,10 @@ defmodule ModbusServer.EtsServer do
     # Control registers
     # CLOUD_ON
     set_integer(Application.get_env(:modbus_server, :cloud_on_register), 0)
-    # WiFi_Command
-    set_integer(Application.get_env(:modbus_server, :wifi_command_register), 0)
+    # WiFi_ERROR
+    set_integer(Application.get_env(:modbus_server, :wifi_error_register), 0)
     # WiFi_IP
     set_string(Application.get_env(:modbus_server, :wifi_ip_register), "", 16)
-    # WiFi_SSID
-    set_string(Application.get_env(:modbus_server, :wifi_ssid_register), "", 32)
-    # WiFi_Password
-    set_string(Application.get_env(:modbus_server, :wifi_password_register), "", 16)
 
     # WiFi_SSIDs
     set_string(Application.get_env(:modbus_server, :wifi_ssid1_register), "", 32)

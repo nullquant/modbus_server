@@ -6,8 +6,6 @@ defmodule ModbusServer.PanelHandler do
 
   @impl ThousandIsland.Handler
   def handle_data(data, socket, state) do
-    IO.puts("Got #{inspect(data)}")
-
     case parse(data) do
       {:ok} ->
         nil
@@ -16,7 +14,6 @@ defmodule ModbusServer.PanelHandler do
         Logger.info("(#{__MODULE__}): error while parsing #{inspect(data)}")
 
       {:reply, reply} ->
-        # IO.puts("#{inspect(reply)}")
         ThousandIsland.Socket.send(socket, reply)
     end
 
@@ -132,40 +129,6 @@ defmodule ModbusServer.PanelHandler do
     {:ok}
   end
 
-  defp parse_request(["w", "ssid", value]) do
-    GenServer.cast(
-      ModbusServer.EtsServer,
-      {:set_string, Application.get_env(:modbus_server, :wifi_ssid_register), value, 32}
-    )
-
-    {:ok}
-  end
-
-  defp parse_request(["w", "password", value]) do
-    GenServer.cast(
-      ModbusServer.EtsServer,
-      {:set_string, Application.get_env(:modbus_server, :wifi_password_register), value, 16}
-    )
-
-    {:ok}
-  end
-
-  defp parse_request(["w", "wifi_on", value]) do
-    {int_value, ""} = Integer.parse(value)
-
-    GenServer.cast(
-      ModbusServer.EtsServer,
-      {:set_integer, Application.get_env(:modbus_server, :wifi_command_register), int_value}
-    )
-
-    GenServer.cast(
-      ModbusServer.Wifi,
-      {:set, int_value}
-    )
-
-    {:ok}
-  end
-
   defp parse_request(["r", "stop"]) do
     case GenServer.call(
            ModbusServer.EtsServer,
@@ -193,13 +156,24 @@ defmodule ModbusServer.PanelHandler do
       end)
       |> Enum.join("")
 
+    error =
+      GenServer.call(
+        ModbusServer.EtsServer,
+        {:read, Application.get_env(:modbus_server, :wifi_error_register), 1}
+      )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, Application.get_env(:modbus_server, :wifi_error_register), 0}
+    )
+
     {:reply,
      ssids <>
        (GenServer.call(
           ModbusServer.EtsServer,
           {:read, Application.get_env(:modbus_server, :wifi_ip_register), 16}
         )
-        |> List.to_string())}
+        |> List.to_string()) <> to_string(error)}
   end
 
   defp parse_request(["disconnect"]) do
