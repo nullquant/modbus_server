@@ -204,9 +204,11 @@ defmodule ModbusServer.PanelHandler do
 
   defp parse_request(["disconnect"]) do
     GenServer.cast(ModbusServer.Wifi, {:disconnect})
+    {:ok}
   end
 
   defp parse_request(["connect", ssid, password]) do
     GenServer.cast(ModbusServer.Wifi, {:connect, ssid, password})
+    {:ok}
   end
 end
