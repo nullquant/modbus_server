@@ -14,7 +14,7 @@ defmodule ModbusServer.PanelHandler do
         Logger.info("(#{__MODULE__}): error while parsing #{inspect(data)}")
 
       {:reply, reply} ->
-        IO.puts("#{inspect(reply)}")
+        # IO.puts("#{inspect(reply)}")
         ThousandIsland.Socket.send(socket, reply)
     end
 
@@ -186,13 +186,19 @@ defmodule ModbusServer.PanelHandler do
         Application.get_env(:modbus_server, :wifi_ssid7_register),
         Application.get_env(:modbus_server, :wifi_ssid8_register)
       ]
-      |> Enum.map(fn address ->
+
+    Logger.info("(#{__MODULE__}): #{inspect(ssids)}")
+
+    ssid_names =
+      Enum.map(ssids, fn address ->
         GenServer.call(ModbusServer.EtsServer, {:read, address, 32}) |> List.to_string()
       end)
       |> Enum.join("")
 
+    Logger.info("(#{__MODULE__}): #{inspect(ssid_names)}")
+
     {:reply,
-     ssids <>
+     ssid_names <>
        (GenServer.call(
           ModbusServer.EtsServer,
           {:read, Application.get_env(:modbus_server, :wifi_ip_register), 16}
