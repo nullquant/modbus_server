@@ -20,6 +20,7 @@ defmodule ModbusServer.PanelHandler do
   def parse(data) do
     data
     |> String.downcase()
+    |> String.trim(<<0>>)
     |> String.split(",")
     |> parse_request()
   end
