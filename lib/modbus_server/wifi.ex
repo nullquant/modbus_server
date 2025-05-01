@@ -40,7 +40,7 @@ defmodule ModbusServer.Wifi do
   @impl true
   def handle_cast({:connect, ssid, password}, %{connected: connected} = state) do
     if connected == [] do
-      Logger.info("(#{__MODULE__}): Connect to WiFi #{ssid}")
+      Logger.info("(#{__MODULE__}): Connect to WiFi #{ssid}...")
 
       {message, result} =
         System.cmd("nmcli", [
@@ -56,8 +56,10 @@ defmodule ModbusServer.Wifi do
 
       error =
         if result != 0 || String.contains?(String.downcase(message), "error") do
+          Logger.info("(#{__MODULE__}):      ...connection error.")
           1
         else
+          Logger.info("(#{__MODULE__}):      ...success.")
           0
         end
 

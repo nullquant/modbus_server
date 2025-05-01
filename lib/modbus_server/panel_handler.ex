@@ -10,9 +10,6 @@ defmodule ModbusServer.PanelHandler do
       {:ok} ->
         nil
 
-      {:error} ->
-        Logger.info("(#{__MODULE__}): error while parsing #{inspect(data)}")
-
       {:reply, reply} ->
         ThousandIsland.Socket.send(socket, reply)
     end
@@ -27,70 +24,39 @@ defmodule ModbusServer.PanelHandler do
     |> parse_request()
   end
 
-  defp parse_request(["w", "pv", value]) do
-    {float_value, ""} = Float.parse(value)
+  defp parse_request(["data", pv, sp, i1, i2, i3]) do
+    {pv_float, ""} = Float.parse(pv)
+    {sp_float, ""} = Float.parse(sp)
+    {i1_float, ""} = Float.parse(i1)
+    {i2_float, ""} = Float.parse(i2)
+    {i3_float, ""} = Float.parse(i3)
 
     GenServer.cast(
       ModbusServer.EtsServer,
-      {:set_float, 0, float_value}
+      {:set_float, 0, pv_float}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_float, 2, sp_float}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_float, Application.get_env(:modbus_server, :i1_register), i1_float}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_float, Application.get_env(:modbus_server, :i2_register), i2_float}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_float, Application.get_env(:modbus_server, :i3_register), i3_float}
     )
 
     GenServer.cast(ModbusServer.FileWriter, {:write})
-
-    {:ok}
-  end
-
-  defp parse_request(["w", "sp", value]) do
-    {float_value, ""} = Float.parse(value)
-
-    GenServer.cast(
-      ModbusServer.EtsServer,
-      {:set_float, 2, float_value}
-    )
-
-    {:ok}
-  end
-
-  defp parse_request(["w", "i1", value]) do
-    {float_value, ""} = Float.parse(value)
-
-    GenServer.cast(
-      ModbusServer.EtsServer,
-      {:set_float, Application.get_env(:modbus_server, :i1_register), float_value}
-    )
-
-    {:ok}
-  end
-
-  defp parse_request(["w", "i2", value]) do
-    {float_value, ""} = Float.parse(value)
-
-    GenServer.cast(
-      ModbusServer.EtsServer,
-      {:set_float, Application.get_env(:modbus_server, :i2_register), float_value}
-    )
-
-    {:ok}
-  end
-
-  defp parse_request(["w", "i3", value]) do
-    {float_value, ""} = Float.parse(value)
-
-    GenServer.cast(
-      ModbusServer.EtsServer,
-      {:set_float, Application.get_env(:modbus_server, :i3_register), float_value}
-    )
-
-    {:ok}
-  end
-
-  defp parse_request(["w", "cloud_on", value]) do
-    {int_value, ""} = Integer.parse(value)
-
-    GenServer.cast(
-      ModbusServer.EtsServer,
-      {:set_integer, Application.get_env(:modbus_server, :cloud_on_register), int_value}
-    )
 
     {:ok}
   end
@@ -111,32 +77,25 @@ defmodule ModbusServer.PanelHandler do
     {:ok}
   end
 
-  defp parse_request(["w", "id", value]) do
+  defp parse_request(["cloud", id, token, value]) do
     GenServer.cast(
       ModbusServer.EtsServer,
-      {:set_modbus_string, Application.get_env(:modbus_server, :cloud_id_register), value, 18}
+      {:set_modbus_string, Application.get_env(:modbus_server, :cloud_id_register), id, 18}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_modbus_string, Application.get_env(:modbus_server, :cloud_token_register), token, 16}
+    )
+
+    {int_value, ""} = Integer.parse(value)
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, Application.get_env(:modbus_server, :cloud_on_register), int_value}
     )
 
     {:ok}
-  end
-
-  defp parse_request(["w", "token", value]) do
-    GenServer.cast(
-      ModbusServer.EtsServer,
-      {:set_modbus_string, Application.get_env(:modbus_server, :cloud_token_register), value, 16}
-    )
-
-    {:ok}
-  end
-
-  defp parse_request(["r", "stop"]) do
-    case GenServer.call(
-           ModbusServer.EtsServer,
-           {:read, Application.get_env(:modbus_server, :gpio_stop_register), 1}
-         ) do
-      {:error} -> {:error}
-      data -> {:reply, List.to_string(data)}
-    end
   end
 
   defp parse_request(["r", "ssids"]) do
@@ -167,13 +126,19 @@ defmodule ModbusServer.PanelHandler do
       {:set_integer, Application.get_env(:modbus_server, :wifi_error_register), 0}
     )
 
+    stop =
+      GenServer.call(
+        ModbusServer.EtsServer,
+        {:read, Application.get_env(:modbus_server, :gpio_stop_register), 1}
+      )
+
     {:reply,
      ssids <>
        (GenServer.call(
           ModbusServer.EtsServer,
           {:read, Application.get_env(:modbus_server, :wifi_ip_register), 16}
         )
-        |> List.to_string()) <> to_string(error)}
+        |> List.to_string()) <> to_string(error) <> to_string(stop)}
   end
 
   defp parse_request(["disconnect"]) do

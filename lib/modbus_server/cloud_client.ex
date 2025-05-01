@@ -82,19 +82,20 @@ defmodule ModbusServer.CloudClient do
         {:stop, {:shutdown, "Cloud register is off"}, state}
 
       data ->
-        {:ok, socket} =
-          :gen_tcp.connect(
-            String.to_charlist(Application.get_env(:modbus_server, :cloud_host)),
-            Application.get_env(:modbus_server, :cloud_port),
-            [:binary, {:packet, 0}]
-          )
+        # {:ok, socket} =
+        #  :gen_tcp.connect(
+        #    String.to_charlist(Application.get_env(:modbus_server, :cloud_host)),
+        #    Application.get_env(:modbus_server, :cloud_port),
+        #    [:binary, {:packet, 0}]
+        #  )
 
         Logger.info("(#{__MODULE__}): Connected to cloud server")
 
         {:noreply,
          %{
            working: data,
-           socket: socket,
+           # socket,
+           socket: nil,
            slave: Application.get_env(:modbus_server, :cloud_slave),
            role: :read
          }}
