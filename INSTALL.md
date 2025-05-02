@@ -57,14 +57,40 @@ Compile
     mix compile
     mix release
 
-### Setup startup
+### Setup lnxrouter startup
 
     sudo nano /etc/rc.local
 
-Add lines:
+Add line:
 
-    /home/orangepi/linux-router/lnxrouter -i eth0 -o wlan0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1 --daemon
-    /home/orangepi/modbus_server/_build/dev/rel/modbus_server/bin/modbus_server daemon
+    /home/orangepi/linux-router/lnxrouter -i eth0 -o wlan0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
+
+### Setup app startup
+
+    sudo nano /lib/systemd/system/modbus_server.service
+
+[Unit]
+Description=PI server for Flexem Panel
+
+[Service]
+Type=simple
+User=orangepi
+Group=orangepi
+Restart=on-failure
+Environment=MIX_ENV=dev
+Environment=LANG=en_US.UTF-8
+
+WorkingDirectory=/home/orangepi/modbus_server
+
+ExecStart=/home/orangepi/modbus_server/_build/dev/rel/modbus_server/bin/modbus_server start
+ExecStop=/home/orangepi/modbus_server/_build/dev/rel/modbus_server/bin/modbus_server stop
+
+[Install]
+WantedBy=multi-user.target
+
+    sudo systemctl enable modbus_server.service
+
+
 
 
 Proxy port 5900 for VNC

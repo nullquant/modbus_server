@@ -35,7 +35,6 @@ defmodule ModbusServer.EtsServer do
     )
 
     # Currents
-
     set_float(Application.get_env(:modbus_server, :i1_register), 0.0)
     set_float(Application.get_env(:modbus_server, :i2_register), 0.0)
     set_float(Application.get_env(:modbus_server, :i3_register), 0.0)
@@ -47,6 +46,8 @@ defmodule ModbusServer.EtsServer do
     set_integer(Application.get_env(:modbus_server, :wifi_error_register), 0)
     # WiFi_IP
     set_string(Application.get_env(:modbus_server, :wifi_ip_register), "", 16)
+    # PANEL_IP
+    set_string(Application.get_env(:modbus_server, :panel_ip_register), "", 16)
 
     # WiFi_SSIDs
     set_string(Application.get_env(:modbus_server, :wifi_ssid1_register), "", 32)

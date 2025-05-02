@@ -78,6 +78,15 @@ defmodule ModbusServer.PanelHandler do
     {:ok}
   end
 
+  defp parse_request(["panel", ip]) do
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_string, Application.get_env(:modbus_server, :panel_ip_register), ip, 16}
+    )
+
+    {:ok}
+  end
+
   defp parse_request(["cloud", id, token, value]) do
     GenServer.cast(
       ModbusServer.EtsServer,
