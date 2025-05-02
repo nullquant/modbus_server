@@ -84,6 +84,8 @@ defmodule ModbusServer.PanelHandler do
       {:set_string, Application.get_env(:modbus_server, :panel_ip_register), ip, 16}
     )
 
+    Logger.info("(#{__MODULE__}): Got Panel IP: #{ip}")
+
     {:ok}
   end
 
