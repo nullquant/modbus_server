@@ -38,7 +38,7 @@ defmodule Proxy.PanelProxy do
   @impl true
   def handle_info({:tcp, _, data}, state) do
     Logger.info("(#{__MODULE__}): PP got from panel #{inspect(data)}, sends to TI")
-    # GenServer.cast(Proxy.ServerProxy, {:panel_send, data})
+    GenServer.cast(Proxy.ServerProxy, {:panel_send, data})
     {:noreply, state}
   end
 

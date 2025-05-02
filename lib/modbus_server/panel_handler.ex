@@ -17,7 +17,7 @@ defmodule ModbusServer.PanelHandler do
     {:continue, state}
   end
 
-  def parse(data) do
+  defp parse(data) do
     data
     |> String.downcase()
     |> String.trim(<<0>>)
