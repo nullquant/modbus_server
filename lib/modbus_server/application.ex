@@ -13,14 +13,8 @@ defmodule ModbusServer.Application do
         id: ModbusServer.EtsServer,
         start: {ModbusServer.EtsServer, :start_link, [0]}
       },
-      %{
-        id: ModbusServer.Supervisor,
-        start: {ModbusServer.Supervisor, :start_link, [0]}
-      },
-      %{
-        id: Proxy.Supervisor,
-        start: {Proxy.Supervisor, :start_link, [0]}
-      }
+      ModbusServer.Supervisor,
+      Proxy.Supervisor
     ]
 
     opts = [strategy: :one_for_one, name: ModbusServer.Supervisor]
