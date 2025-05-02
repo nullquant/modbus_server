@@ -56,4 +56,7 @@ config :modbus_server,
   ftp_port: env!("FTP_PORT", :integer),
   ftp_folder: env!("FTP_FOLDER", :string),
   ftp_user: env!("FTP_USER", :string),
-  ftp_password: env!("FTP_PASSWORD", :string)
+  ftp_password: env!("FTP_PASSWORD", :string),
+  proxy_iface: env!("PROXY_IFACE", :string),
+  proxy_panel_port: env!("PROXY_PANEL_PORT", :integer),
+  proxy_pi_port: env!("PROXY_IP_PORT", :integer)

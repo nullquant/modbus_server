@@ -1,0 +1,22 @@
+defmodule Proxy.ServerProxy do
+  @moduledoc """
+  Server that can be connected from outside, send info to panel through Proxy.PanelProxy and write back
+  """
+  require Logger
+  use ThousandIsland.Handler
+
+  @impl ThousandIsland.Handler
+  def handle_data(data, _socket, state) do
+    # send data to panel
+    GenServer.cast(Proxy.PanelProxy, {:data, data})
+
+    {:continue, state}
+  end
+
+  @impl GenServer
+  def handle_cast({:panel_send, msg}, {socket, state}) do
+    # send msg from panel back
+    ThousandIsland.Socket.send(socket, msg)
+    {:noreply, {socket, state}, socket.read_timeout}
+  end
+end

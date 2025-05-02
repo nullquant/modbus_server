@@ -6,18 +6,7 @@ defmodule ModbusServer.Application do
 
   @impl true
   def start(_type, _args) do
-    panel_ip = Modbus.Crc.get_ip(Application.get_env(:modbus_server, :eth0_iface))
-    panel_port = Application.get_env(:modbus_server, :eth0_port)
-
-    panel_ip_tuple =
-      panel_ip
-      |> String.split(".")
-      |> Enum.map(&String.to_integer/1)
-      |> List.to_tuple()
-
     ModbusServer.SFTPServer.start()
-
-    Logger.info("(#{__MODULE__}): Listening from panel on #{panel_ip}:#{panel_port} port")
 
     children = [
       %{
@@ -25,25 +14,13 @@ defmodule ModbusServer.Application do
         start: {ModbusServer.EtsServer, :start_link, [0]}
       },
       %{
-        id: ModbusServer.CloudClient,
-        start: {ModbusServer.CloudClient, :start_link, [0]}
+        id: ModbusServer.Supervisor,
+        start: {ModbusServer.Supervisor, :start_link, [0]}
       },
       %{
-        id: ModbusServer.FileWriter,
-        start: {ModbusServer.FileWriter, :start_link, [0]}
-      },
-      %{
-        id: ModbusServer.Wifi,
-        start: {ModbusServer.Wifi, :start_link, [0]}
-      },
-      %{
-        id: ModbusServer.Gpio,
-        start: {ModbusServer.Gpio, :start_link, [0]}
-      },
-      {ThousandIsland,
-       port: panel_port,
-       handler_module: ModbusServer.PanelHandler,
-       transport_options: [ip: panel_ip_tuple]}
+        id: Proxy.Supervisor,
+        start: {Proxy.Supervisor, :start_link, [0]}
+      }
     ]
 
     opts = [strategy: :one_for_one, name: ModbusServer.Supervisor]
