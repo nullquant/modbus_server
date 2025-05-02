@@ -14,11 +14,11 @@ defmodule Proxy.ServerProxy do
     {:continue, state}
   end
 
-  @impl GenServer
-  def handle_cast({:panel_send, msg}, {socket, state}) do
-    # send msg from panel back
-    Logger.info("(#{__MODULE__}): TI got from PP #{inspect(msg)}, sends to panel")
-    ThousandIsland.Socket.send(socket, msg)
-    {:noreply, {socket, state}, socket.read_timeout}
-  end
+  # @impl GenServer
+  # def handle_cast({:panel_send, msg}, {socket, state}) do
+  #  # send msg from panel back
+  #  Logger.info("(#{__MODULE__}): TI got from PP #{inspect(msg)}, sends to panel")
+  #  ThousandIsland.Socket.send(socket, msg)
+  #  {:noreply, {socket, state}, socket.read_timeout}
+  # end
 end
