@@ -19,7 +19,7 @@ defmodule ModbusServer.Supervisor do
       |> Enum.map(&String.to_integer/1)
       |> List.to_tuple()
 
-    Logger.info("(#{__MODULE__}): Listening from panel on #{eth0_ip}:#{eth0_port} port")
+    Logger.info("(#{__MODULE__}): Listening from panel on #{eth0_ip}:#{eth0_port}")
 
     children = [
       %{
