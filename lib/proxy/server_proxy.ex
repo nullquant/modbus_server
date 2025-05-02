@@ -8,6 +8,7 @@ defmodule Proxy.ServerProxy do
   @impl ThousandIsland.Handler
   def handle_data(data, _socket, state) do
     # send data to panel
+    Logger.info("(#{__MODULE__}): TI got from outside #{inspect(data)}, sends to PP")
     GenServer.cast(Proxy.PanelProxy, {:data, data})
 
     {:continue, state}
@@ -16,6 +17,7 @@ defmodule Proxy.ServerProxy do
   @impl GenServer
   def handle_cast({:panel_send, msg}, {socket, state}) do
     # send msg from panel back
+    Logger.info("(#{__MODULE__}): TI got from PP #{inspect(msg)}, sends to panel")
     ThousandIsland.Socket.send(socket, msg)
     {:noreply, {socket, state}, socket.read_timeout}
   end
