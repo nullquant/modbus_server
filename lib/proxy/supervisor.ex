@@ -1,5 +1,8 @@
 defmodule Proxy.Supervisor do
+  @moduledoc false
+
   use Supervisor
+  require Logger
 
   def start_link(opts) do
     Supervisor.start_link(__MODULE__, :ok, opts)
@@ -15,6 +18,8 @@ defmodule Proxy.Supervisor do
       |> String.split(".")
       |> Enum.map(&String.to_integer/1)
       |> List.to_tuple()
+
+    Logger.info("(#{__MODULE__}): Listening outside on #{proxy_ip}:#{proxy_pi_port}")
 
     children = [
       {ThousandIsland,
