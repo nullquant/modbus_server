@@ -9,7 +9,11 @@ defmodule Proxy.ServerProxy do
   def handle_connection(socket, state) do
     {:ok, {remote_address, port}} = ThousandIsland.Socket.peername(socket)
     {:ok, _pid} = Registry.register(ProxyRegistry, "ServerProxy", nil)
-    Logger.info("(#{__MODULE__}): TI got connected from #{remote_address} on port #{port})}")
+
+    Logger.info(
+      "(#{__MODULE__}): TI got connected from #{inspect(remote_address)} on port #{port})}"
+    )
+
     GenServer.cast(Proxy.PanelProxy, {:connected})
     {:continue, state}
   end
