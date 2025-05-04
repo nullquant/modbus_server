@@ -71,6 +71,7 @@ defmodule Proxy.PanelProxy do
         {:read, Application.get_env(:modbus_server, :panel_ip_register), 16}
       )
       |> List.to_string()
+      |> String.trim(<<0>>)
       |> String.split(".")
 
     case length(ip_list) do
