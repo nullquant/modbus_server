@@ -6,7 +6,7 @@ defmodule Proxy.ServerProxy do
   use ThousandIsland.Handler
 
   @impl ThousandIsland.Handler
-  def handle_connection(socket, state) do
+  def handle_connection(_socket, state) do
     Logger.info("(#{__MODULE__}): TI got connected")
     GenServer.cast(Proxy.PanelProxy, {:connected})
     {:continue, state}
