@@ -30,7 +30,7 @@ defmodule Proxy.Supervisor do
       {ThousandIsland,
        port: proxy_pi_port,
        handler_module: Proxy.ServerProxy,
-       transport_options: [ip: proxy_ip_tuple]}
+       transport_options: [mode: :binary, active: true, ip: proxy_ip_tuple]}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
