@@ -17,6 +17,23 @@ defmodule Proxy.PanelProxy do
   end
 
   @impl true
+  def handle_cast({:connected}, %{socket: socket, port: port} = state) do
+    connected_socket =
+      case socket do
+        nil ->
+          ip = read_panel_ip()
+          opts = [:binary, active: false]
+          {:ok, connected_socket} = :gen_tcp.connect(ip, port, opts)
+          connected_socket
+
+        _ ->
+          socket
+      end
+
+    {:noreply, %{state | socket: connected_socket}}
+  end
+
+  @impl true
   def handle_cast({:data, data}, %{socket: socket, port: port} = state) do
     connected_socket =
       case socket do
