@@ -50,14 +50,14 @@ defmodule Proxy.PanelProxy do
           socket
       end
 
-    Logger.info("(#{__MODULE__}): PP got from TI #{inspect(data)}, sends to panel")
+    # Logger.info("(#{__MODULE__}): PP got from TI #{inspect(data)}, sends to panel")
     :ok = :gen_tcp.send(connected_socket, data)
     {:noreply, %{state | socket: connected_socket}}
   end
 
   @impl true
   def handle_info({:tcp, _, data}, state) do
-    Logger.info("(#{__MODULE__}): PP got from panel #{inspect(data)}, sends to TI")
+    # Logger.info("(#{__MODULE__}): PP got from panel #{inspect(data)}, sends to TI")
     [{pid, nil}] = Registry.lookup(ProxyRegistry, "ServerProxy")
     GenServer.cast(pid, {:panel_send, data})
     {:noreply, state}
