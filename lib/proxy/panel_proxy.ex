@@ -24,7 +24,7 @@ defmodule Proxy.PanelProxy do
           ip = read_panel_ip()
           opts = [:binary, active: false]
           {:ok, connected_socket} = :gen_tcp.connect(ip, port, opts)
-          Logger.info("(#{__MODULE__}): PP connects to panel at #{ip}:#{port}")
+          Logger.info("(#{__MODULE__}): PP connects to panel at #{inspect(ip)}:#{inspect(port)}")
 
           connected_socket
 
@@ -43,7 +43,7 @@ defmodule Proxy.PanelProxy do
           ip = read_panel_ip()
           opts = [:binary, active: false]
           {:ok, connected_socket} = :gen_tcp.connect(ip, port, opts)
-          Logger.info("(#{__MODULE__}): PP connects to panel at #{ip}:#{port}")
+          Logger.info("(#{__MODULE__}): PP connects to panel at #{inspect(ip)}:#{inspect(port)}")
           connected_socket
 
         _ ->
