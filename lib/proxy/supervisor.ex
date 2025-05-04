@@ -22,6 +22,7 @@ defmodule Proxy.Supervisor do
     Logger.info("(#{__MODULE__}): Listening outside on #{proxy_ip}:#{proxy_pi_port}")
 
     children = [
+      {Registry, [keys: :unique, name: ProxyRegistry]},
       %{
         id: Proxy.PanelProxy,
         start: {Proxy.PanelProxy, :start_link, [0]}
