@@ -5,6 +5,22 @@ defmodule ModbusServer.PanelHandler do
   use ThousandIsland.Handler
 
   @impl ThousandIsland.Handler
+  def handle_connection(socket, state) do
+    {:ok, {remote_address, _port}} = ThousandIsland.Socket.peername(socket)
+
+    {a, b, c, d} = remote_address
+    ip = "#{a}.#{b}.#{c}.#{d}"
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_string, Application.get_env(:modbus_server, :panel_ip_register), ip, 16}
+    )
+
+    Logger.info("(#{__MODULE__}): Got Panel IP (from connection): #{ip}")
+    {:continue, state}
+  end
+
+  @impl ThousandIsland.Handler
   def handle_data(data, socket, state) do
     case parse(data) do
       {:ok} ->
