@@ -34,10 +34,11 @@ defmodule ModbusServer.EtsServer do
       :modbus
     )
 
-    # Currents
+    # Currents and fan
     set_float(Application.get_env(:modbus_server, :i1_register), 0.0)
     set_float(Application.get_env(:modbus_server, :i2_register), 0.0)
     set_float(Application.get_env(:modbus_server, :i3_register), 0.0)
+    set_float(Application.get_env(:modbus_server, :fan_register), 0.0)
 
     # Control registers
     # CLOUD_ON
