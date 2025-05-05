@@ -24,12 +24,13 @@ defmodule ModbusServer.PanelHandler do
     |> parse_request()
   end
 
-  defp parse_request(["data", pv, sp, i1, i2, i3]) do
+  defp parse_request(["data", pv, sp, i1, i2, i3, fan]) do
     {pv_float, ""} = Float.parse(pv)
     {sp_float, ""} = Float.parse(sp)
     {i1_float, ""} = Float.parse(i1)
     {i2_float, ""} = Float.parse(i2)
     {i3_float, ""} = Float.parse(i3)
+    {fan_float, ""} = Float.parse(fan)
 
     GenServer.cast(
       ModbusServer.EtsServer,
@@ -54,6 +55,11 @@ defmodule ModbusServer.PanelHandler do
     GenServer.cast(
       ModbusServer.EtsServer,
       {:set_float, Application.get_env(:modbus_server, :i3_register), i3_float}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_float, Application.get_env(:modbus_server, :fan_register), fan_float}
     )
 
     GenServer.cast(ModbusServer.FileWriter, {:write})
