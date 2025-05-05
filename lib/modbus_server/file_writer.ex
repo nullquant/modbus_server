@@ -60,11 +60,19 @@ defmodule ModbusServer.FileWriter do
         )
       )
 
+    fan =
+      to_string(
+        GenServer.call(
+          ModbusServer.EtsServer,
+          {:get_float, Application.get_env(:modbus_server, :fan_register)}
+        )
+      )
+
     datetime = DateTime.to_string(DateTime.add(DateTime.utc_now(), 3, :hour))
 
     data =
       String.slice(datetime, 0..22) <>
-        "," <> pv <> "," <> sp <> "," <> i1 <> "," <> i2 <> "," <> i3 <> "\n"
+        "," <> pv <> "," <> sp <> "," <> i1 <> "," <> i2 <> "," <> i3 <> fan <> "\n"
 
     File.open(Path.join(data_folder, String.slice(datetime, 0..9) <> ".csv"), [:append])
     |> elem(1)
