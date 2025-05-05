@@ -16,7 +16,7 @@ defmodule ModbusServer.PanelHandler do
       {:set_string, Application.get_env(:modbus_server, :panel_ip_register), ip, 16}
     )
 
-    Logger.info("(#{__MODULE__}): Got Panel IP (from connection): #{ip}")
+    #Logger.info("(#{__MODULE__}): Got Panel IP (from connection): #{ip}")
     {:continue, state}
   end
 
@@ -95,17 +95,6 @@ defmodule ModbusServer.PanelHandler do
       ModbusServer.Gpio,
       {:write, Application.get_env(:modbus_server, :gpio_fan_pin), int_value}
     )
-
-    {:ok}
-  end
-
-  defp parse_request(["panel", ip]) do
-    GenServer.cast(
-      ModbusServer.EtsServer,
-      {:set_string, Application.get_env(:modbus_server, :panel_ip_register), ip, 16}
-    )
-
-    Logger.info("(#{__MODULE__}): Got Panel IP: #{ip}")
 
     {:ok}
   end
