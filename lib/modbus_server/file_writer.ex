@@ -72,7 +72,7 @@ defmodule ModbusServer.FileWriter do
 
     data =
       String.slice(datetime, 0..22) <>
-        "," <> pv <> "," <> sp <> "," <> i1 <> "," <> i2 <> "," <> i3 <> fan <> "\n"
+        "," <> pv <> "," <> sp <> "," <> i1 <> "," <> i2 <> "," <> i3 <> "," <> fan <> "\n"
 
     File.open(Path.join(data_folder, String.slice(datetime, 0..9) <> ".csv"), [:append])
     |> elem(1)
