@@ -159,7 +159,7 @@ defmodule ModbusServer.PanelHandler do
   end
 
   defp parse_request(["connect", ssid, password]) do
-    GenServer.cast(ModbusServer.Wifi, {:connect, ssid, password})
+    GenServer.cast(ModbusServer.Wifi, {:connect, String.trim(ssid, <<0>>), String.trim(password, <<0>>)})
     {:ok}
   end
 end
