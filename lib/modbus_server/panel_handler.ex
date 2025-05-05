@@ -19,7 +19,6 @@ defmodule ModbusServer.PanelHandler do
 
   defp parse(data) do
     data
-    |> String.downcase()
     |> String.trim(<<0>>)
     |> String.split(",")
     |> parse_request()
