@@ -10,16 +10,17 @@ defmodule Proxy.Supervisor do
 
   @impl true
   def init(:ok) do
-    proxy_ip = Modbus.Crc.get_ip(Application.get_env(:modbus_server, :proxy_iface))
+    #proxy_ip = Modbus.Crc.get_ip(Application.get_env(:modbus_server, :proxy_iface))
     proxy_pi_port = Application.get_env(:modbus_server, :proxy_pi_port)
 
-    proxy_ip_tuple =
-      proxy_ip
-      |> String.split(".")
-      |> Enum.map(&String.to_integer/1)
-      |> List.to_tuple()
+    #proxy_ip_tuple =
+    #  proxy_ip
+    #  |> String.split(".")
+    #  |> Enum.map(&String.to_integer/1)
+    #  |> List.to_tuple()
 
-    Logger.info("(#{__MODULE__}): Listening outside on #{proxy_ip}:#{proxy_pi_port}")
+    #Logger.info("(#{__MODULE__}): Listening outside on #{proxy_ip}:#{proxy_pi_port}")
+    Logger.info("(#{__MODULE__}): Listening outside on port #{proxy_pi_port}")
 
     children = [
       {Registry, [keys: :unique, name: ProxyRegistry]},
@@ -33,8 +34,8 @@ defmodule Proxy.Supervisor do
        transport_options: [
          mode: :binary,
          send_timeout: 2_000,
-         send_timeout_close: true,
-         ip: proxy_ip_tuple
+         send_timeout_close: true
+         #ip: proxy_ip_tuple
        ]}
     ]
 
