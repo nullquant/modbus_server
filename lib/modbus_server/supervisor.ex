@@ -14,10 +14,16 @@ defmodule ModbusServer.Supervisor do
     eth0_port = Application.get_env(:modbus_server, :eth0_port)
 
     eth0_ip_tuple =
-      eth0_ip
-      |> String.split(".")
-      |> Enum.map(&String.to_integer/1)
-      |> List.to_tuple()
+      case eth0_ip do
+        nil ->
+          nil
+
+        value ->
+          value
+          |> String.split(".")
+          |> Enum.map(&String.to_integer/1)
+          |> List.to_tuple()
+      end
 
     Logger.info("(#{__MODULE__}): Listening from panel on #{eth0_ip}:#{eth0_port}")
 

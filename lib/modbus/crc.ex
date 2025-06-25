@@ -603,6 +603,8 @@ defmodule Modbus.Crc do
   def get_ip(interface) do
     {result, _} = System.cmd("/sbin/ip", ["-o", "-4", "addr", "list", interface])
 
+    Logger.info("(#{__MODULE__}): get ip #{inspect(result)} from interface #{inspect(interface)}")
+
     result
     |> String.split(" ")
     |> Enum.at(6)
