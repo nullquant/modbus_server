@@ -5,6 +5,22 @@ defmodule ModbusServer.PanelHandler do
   use ThousandIsland.Handler
 
   @impl ThousandIsland.Handler
+  def handle_connection(socket, state) do
+    {:ok, {remote_address, _port}} = ThousandIsland.Socket.peername(socket)
+
+    {a, b, c, d} = remote_address
+    ip = "#{a}.#{b}.#{c}.#{d}"
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_string, Application.get_env(:modbus_server, :panel_ip_register), ip, 16}
+    )
+
+    #Logger.info("(#{__MODULE__}): Got Panel IP (from connection): #{ip}")
+    {:continue, state}
+  end
+
+  @impl ThousandIsland.Handler
   def handle_data(data, socket, state) do
     case parse(data) do
       {:ok} ->
@@ -19,18 +35,18 @@ defmodule ModbusServer.PanelHandler do
 
   defp parse(data) do
     data
-    |> String.downcase()
     |> String.trim(<<0>>)
     |> String.split(",")
     |> parse_request()
   end
 
-  defp parse_request(["data", pv, sp, i1, i2, i3]) do
+  defp parse_request(["data", pv, sp, i1, i2, i3, fan]) do
     {pv_float, ""} = Float.parse(pv)
     {sp_float, ""} = Float.parse(sp)
     {i1_float, ""} = Float.parse(i1)
     {i2_float, ""} = Float.parse(i2)
     {i3_float, ""} = Float.parse(i3)
+    {fan_float, ""} = Float.parse(fan)
 
     GenServer.cast(
       ModbusServer.EtsServer,
@@ -57,6 +73,11 @@ defmodule ModbusServer.PanelHandler do
       {:set_float, Application.get_env(:modbus_server, :i3_register), i3_float}
     )
 
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_float, Application.get_env(:modbus_server, :fan_register), fan_float}
+    )
+
     GenServer.cast(ModbusServer.FileWriter, {:write})
 
     {:ok}
@@ -74,17 +95,6 @@ defmodule ModbusServer.PanelHandler do
       ModbusServer.Gpio,
       {:write, Application.get_env(:modbus_server, :gpio_fan_pin), int_value}
     )
-
-    {:ok}
-  end
-
-  defp parse_request(["panel", ip]) do
-    GenServer.cast(
-      ModbusServer.EtsServer,
-      {:set_string, Application.get_env(:modbus_server, :panel_ip_register), ip, 16}
-    )
-
-    Logger.info("(#{__MODULE__}): Got Panel IP: #{ip}")
 
     {:ok}
   end
@@ -159,7 +169,7 @@ defmodule ModbusServer.PanelHandler do
   end
 
   defp parse_request(["connect", ssid, password]) do
-    GenServer.cast(ModbusServer.Wifi, {:connect, ssid, password})
+    GenServer.cast(ModbusServer.Wifi, {:connect, String.trim(ssid, <<0>>), String.trim(password, <<0>>)})
     {:ok}
   end
 end
