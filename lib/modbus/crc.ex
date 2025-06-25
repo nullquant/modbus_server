@@ -605,10 +605,16 @@ defmodule Modbus.Crc do
 
     Logger.info("(#{__MODULE__}): get ip #{inspect(result)} from interface #{inspect(interface)}")
 
-    result
-    |> String.split(" ")
-    |> Enum.at(6)
-    |> String.split("/")
-    |> Enum.at(0)
+    case result do
+      nil ->
+        nil
+
+      value ->
+        value
+        |> String.split(" ")
+        |> Enum.at(6)
+        |> String.split("/")
+        |> Enum.at(0)
+    end
   end
 end
