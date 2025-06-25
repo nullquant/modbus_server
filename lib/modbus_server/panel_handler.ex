@@ -16,7 +16,7 @@ defmodule ModbusServer.PanelHandler do
       {:set_string, Application.get_env(:modbus_server, :panel_ip_register), ip, 16}
     )
 
-    #Logger.info("(#{__MODULE__}): Got Panel IP (from connection): #{ip}")
+    # Logger.info("(#{__MODULE__}): Got Panel IP (from connection): #{ip}")
     {:continue, state}
   end
 
@@ -40,13 +40,16 @@ defmodule ModbusServer.PanelHandler do
     |> parse_request()
   end
 
-  defp parse_request(["data", pv, sp, i1, i2, i3, fan]) do
+  defp parse_request(["data", pv, sp, i1, i2, i3, fan, out, s1, s2]) do
     {pv_float, ""} = Float.parse(pv)
     {sp_float, ""} = Float.parse(sp)
     {i1_float, ""} = Float.parse(i1)
     {i2_float, ""} = Float.parse(i2)
     {i3_float, ""} = Float.parse(i3)
     {fan_float, ""} = Float.parse(fan)
+    {out_float, ""} = Float.parse(out)
+    {s1_int, ""} = Integer.parse(s1)
+    {s2_int, ""} = Integer.parse(s2)
 
     GenServer.cast(
       ModbusServer.EtsServer,
@@ -56,6 +59,26 @@ defmodule ModbusServer.PanelHandler do
     GenServer.cast(
       ModbusServer.EtsServer,
       {:set_float, 2, sp_float}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_float, 4, fan_float}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_float, 14, out_float}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, 16, s1_int}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, 17, s2_int}
     )
 
     GenServer.cast(
@@ -169,7 +192,11 @@ defmodule ModbusServer.PanelHandler do
   end
 
   defp parse_request(["connect", ssid, password]) do
-    GenServer.cast(ModbusServer.Wifi, {:connect, String.trim(ssid, <<0>>), String.trim(password, <<0>>)})
+    GenServer.cast(
+      ModbusServer.Wifi,
+      {:connect, String.trim(ssid, <<0>>), String.trim(password, <<0>>)}
+    )
+
     {:ok}
   end
 end

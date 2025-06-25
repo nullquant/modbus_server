@@ -13,7 +13,7 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
 
 ### Install Erlang 25
 
-    sudo apt install git wget erlang 
+    sudo apt install git wget erlang ntp
 
 ### Install Elixir 1.18.3
 
@@ -62,7 +62,7 @@ Compile
 
 Add line:
 
-    /home/orangepi/linux-router/lnxrouter -i eth0 -o wlan0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
+    /home/orangepi/linux-router/lnxrouter -i end0 -o wlan0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
 
 ### Setup app startup
 
