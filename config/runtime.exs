@@ -51,12 +51,7 @@ config :modbus_server,
   proxy_pi_port: env!("PROXY_PI_PORT", :integer)
 
 ftp_dir =
-  to_charlist(
-    Path.join(
-      Path.join(:code.priv_dir(:modbus_server), env!("FTP_FOLDER", :string)),
-      "modbus_server.log"
-    )
-  )
+  to_charlist(Path.join(:code.priv_dir(:modbus_server), "data/modbus_server.log"))
 
 config :logger, :default_formatter, format: "$date $time [$level] $message\n"
 
