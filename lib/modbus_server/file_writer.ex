@@ -35,6 +35,9 @@ defmodule ModbusServer.FileWriter do
   def handle_cast({:write}, %{folder: data_folder} = state) do
     pv = to_string(GenServer.call(ModbusServer.EtsServer, {:get_float, 0}))
     sp = to_string(GenServer.call(ModbusServer.EtsServer, {:get_float, 2}))
+    out = to_string(GenServer.call(ModbusServer.EtsServer, {:get_float, 14}))
+    s1 = to_string(GenServer.call(ModbusServer.EtsServer, {:read, 16}))
+    s2 = to_string(GenServer.call(ModbusServer.EtsServer, {:read, 17}))
 
     i1 =
       to_string(
@@ -70,9 +73,28 @@ defmodule ModbusServer.FileWriter do
 
     datetime = DateTime.to_string(DateTime.add(DateTime.utc_now(), 3, :hour))
 
-    data =
-      String.slice(datetime, 0..22) <>
-        "," <> pv <> "," <> sp <> "," <> i1 <> "," <> i2 <> "," <> i3 <> "," <> fan <> "\n"
+    data = [
+      String.slice(datetime, 0..22),
+      ",",
+      pv,
+      ",",
+      sp,
+      ",",
+      i1,
+      ",",
+      i2,
+      ",",
+      i3,
+      ",",
+      fan,
+      ",",
+      out,
+      ",",
+      s1,
+      ",",
+      s2,
+      "\n"
+    ]
 
     File.open(Path.join(data_folder, String.slice(datetime, 0..9) <> ".csv"), [:append])
     |> elem(1)

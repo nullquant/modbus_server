@@ -44,7 +44,8 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
 
 Add private config (CLOUD_HOST, CLOUD_PORT, CLOUD_ID, CLOUD_TOKEN, FTP_USER, FTP_PASSWORD):
 
-    nano modbus_server/envs/.overrides.env
+    cd modbus_server
+    nano envs/.overrides.env
 
 Add SSH host key:
 
