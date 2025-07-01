@@ -4,8 +4,12 @@ defmodule ModbusServer.Ntp do
   require Record
   require Logger
 
+  import Bitwise
+
   @ntp_port 123
   @client_timeout 500
+  # offset yr 1900 to unix epoch
+  @epoch 2_208_988_800
 
   def start_link(arg) do
     GenServer.start_link(__MODULE__, arg, name: __MODULE__)
@@ -13,21 +17,19 @@ defmodule ModbusServer.Ntp do
 
   @impl GenServer
   def init(_args) do
-    state = get_time()
-    {:ok, state}
+    Process.send_after(self(), :sync, 100)
+    {:ok, %{sync: false}}
   end
 
-  def ntp_servers do
-    ["0.ru.pool.ntp.org", "1.ru.pool.ntp.org", "2.ru.pool.ntp.org", "3.ru.pool.ntp.org"]
+  @impl GenServer
+  def handle_info(:sync, state) do
+    IO.puts("#{inspect(get_time())}")
+    Process.send_after(self(), :sync, 1000)
+    {:noreply, state}
   end
 
   def get_time() do
     random_domain = String.to_charlist(Enum.random(ntp_servers()))
-    Logger.info("Selected NTP server name: #{inspect(random_domain)}")
-    # {:ok, {_, _, _, _, _, ips}} = :inet_res.getbyname(random_domain, :a)
-    # Logger.info("Server IPs: #{inspect(ips)}")
-    # ip = Enum.random(ips)
-    # Logger.info("Selected server IP: #{inspect(ips)}")
     get_time(random_domain)
   end
 
@@ -37,7 +39,11 @@ defmodule ModbusServer.Ntp do
     process_ntp_response(ntp_response)
   end
 
-  def create_ntp_request do
+  defp ntp_servers do
+    ["0.ru.pool.ntp.org", "1.ru.pool.ntp.org", "2.ru.pool.ntp.org", "3.ru.pool.ntp.org"]
+  end
+
+  defp create_ntp_request do
     <<0::integer-size(2), 4::integer-size(3), 3::integer-size(3), 0::integer-size(376)>>
   end
 
@@ -53,8 +59,37 @@ defmodule ModbusServer.Ntp do
 
   defp process_ntp_response(
          <<li::integer-size(2), version::integer-size(3), mode::integer-size(3),
-           _rest::integer-size(376)>>
+           stratum::integer-size(8), poll::integer-size(8), precision::integer-size(8),
+           root_del::integer-size(32), root_disp::integer-size(32), r1::integer-size(8),
+           r2::integer-size(8), r3::integer-size(8), r4::integer-size(8), rts_i::integer-size(32),
+           rts_f::integer-size(32), ots_i::integer-size(32), ots_f::integer-size(32),
+           rcv_i::integer-size(32), rcv_f::integer-size(32), xmt_i::integer-size(32),
+           xmt_f::integer-size(32)>>
        ) do
-    {li, version, mode}
+    {now_ms, now_s, now_us} = :erlang.timestamp()
+    timestamp_now = now_ms * 1.0e6 + now_s + now_us / 1000.0
+    timestamp_transit = xmt_i - @epoch + binfrac(xmt_f)
+
+    %{
+      li: li,
+      vn: version,
+      mode: mode,
+      stratum: stratum,
+      poll: poll,
+      precision: precision,
+      root_delay: root_del,
+      root_dispersion: root_disp,
+      reference_id: {r1, r2, r3, r4},
+      reference_timestamp: rts_i - @epoch + binfrac(rts_f),
+      originate_timestamp: ots_i - @epoch + binfrac(ots_f),
+      receive_timestamp: rcv_i - @epoch + binfrac(rcv_f),
+      transmit_timestamp: timestamp_transit,
+      client_receive_timestamp: timestamp_now,
+      offset: timestamp_transit - timestamp_now
+    }
   end
+
+  def binfrac(bin), do: binfrac(bin, 2, 0)
+  def binfrac(0, _, frac), do: frac
+  def binfrac(bin, n, frac), do: binfrac(bsr(bin, 1), n * 2, frac + band(bin, 1) / n)
 end
