@@ -88,7 +88,20 @@ ExecStop=/home/orangepi/modbus_server/_build/dev/rel/modbus_server/bin/modbus_se
 [Install]
 WantedBy=multi-user.target
 
+
+### Setup change time by any user
+
     sudo systemctl enable modbus_server.service
+
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.timedate1.set-time") {
+        return polkit.Result.YES;
+    }
+});
+
+
+
+sudo nano /etc/polkit-1/rules.d/10-timedate.rules
 
 
 

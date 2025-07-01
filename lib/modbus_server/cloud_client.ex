@@ -18,7 +18,7 @@ defmodule ModbusServer.CloudClient do
 
   @impl true
   def handle_info({:tcp, socket, data}, %{slave: slave, role: role} = state) do
-    Logger.info("(#{__MODULE__}): Received data: #{inspect(data, base: :hex)}")
+    # Logger.info("(#{__MODULE__}): Received data: #{inspect(data, base: :hex)}")
 
     case Modbus.Tcp.parse(slave, role, data) do
       :none ->

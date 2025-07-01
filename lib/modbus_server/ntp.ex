@@ -1,7 +1,6 @@
 defmodule ModbusServer.Ntp do
   use GenServer
 
-  require Record
   require Logger
 
   import Bitwise
@@ -10,6 +9,7 @@ defmodule ModbusServer.Ntp do
   @client_timeout 500
   # offset yr 1900 to unix epoch
   @epoch 2_208_988_800
+  @repeat 600_000
 
   def start_link(arg) do
     GenServer.start_link(__MODULE__, arg, name: __MODULE__)
@@ -54,12 +54,14 @@ defmodule ModbusServer.Ntp do
     mm = String.pad_leading(Integer.to_string(minutes), 2, "0")
     ss = String.pad_leading(Integer.to_string(seconds), 2, "0")
 
+    Logger.info("(#{__MODULE__}): Set time & date: #{yy}-#{mth}-#{dd} #{hh}:#{mm}:#{ss}")
+
     {message, result} =
       System.cmd("timedatectl", ["set-time", "#{yy}-#{mth}-#{dd} #{hh}:#{mm}:#{ss}"])
 
-    IO.puts("#{yy}-#{mth}-#{dd} #{hh}:#{mm}:#{ss}  #{inspect({message, result})}")
+    Logger.info("(#{__MODULE__}): system answer: #{inspect({message, result})}")
 
-    Process.send_after(self(), :sync, 1000)
+    Process.send_after(self(), :sync, @repeat)
     {:noreply, state}
   end
 
