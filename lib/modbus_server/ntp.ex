@@ -23,6 +23,21 @@ defmodule ModbusServer.Ntp do
 
   @impl GenServer
   def handle_info(:sync, state) do
+    # When the server reply is received, the client determines a
+    # Destination Timestamp variable as the time of arrival according to
+    # its clock in NTP timestamp format.  The following table summarizes
+    # the four timestamps.
+
+    #   Timestamp Name          ID   When Generated
+    #   ------------------------------------------------------------
+    #   Originate Timestamp     T1   time request sent by client
+    #   Receive Timestamp       T2   time request received by server
+    #   Transmit Timestamp      T3   time reply sent by server
+    #   Destination Timestamp   T4   time reply received by client
+
+    # The roundtrip delay d and system clock offset t are defined as:
+    #   d = (T4 - T1) - (T3 - T2)     t = ((T2 - T1) + (T3 - T4)) / 2.
+
     IO.puts("#{inspect(get_time())}")
     Process.send_after(self(), :sync, 1000)
     {:noreply, state}
@@ -35,8 +50,8 @@ defmodule ModbusServer.Ntp do
 
   def get_time(ip) do
     ntp_request = create_ntp_request()
-    ntp_response = send_ntp_request(ip, ntp_request)
-    process_ntp_response(ntp_response)
+    {timestamp, ntp_response} = send_ntp_request(ip, ntp_request)
+    process_ntp_response(timestamp, ntp_response)
   end
 
   defp ntp_servers do
@@ -49,19 +64,24 @@ defmodule ModbusServer.Ntp do
 
   def send_ntp_request(ip, ntp_request) do
     {:ok, socket} = :gen_udp.open(0, [:binary, {:active, false}])
-    Logger.info("Local socket: #{inspect(socket)}")
+
+    {now_ms, now_s, now_us} = :erlang.timestamp()
+    timestamp_now = now_ms * 1.0e6 + now_s + now_us / 1000.0
+
     :gen_udp.send(socket, ip, @ntp_port, ntp_request)
     {:ok, {_address, _port, response}} = :gen_udp.recv(socket, 0, @client_timeout)
     :gen_udp.close(socket)
-    Logger.info("NTP server response: #{inspect(response)}")
-    response
+
+    {timestamp_now, response}
   end
 
   defp process_ntp_response(
+         timestamp_send,
          <<li::integer-size(2), version::integer-size(3), mode::integer-size(3),
-           stratum::integer-size(8), poll::integer-size(8), precision::integer-size(8),
-           root_del::integer-size(32), root_disp::integer-size(32), r1::integer-size(8),
-           r2::integer-size(8), r3::integer-size(8), r4::integer-size(8), rts_i::integer-size(32),
+           stratum::integer-size(8), poll::integer-signed-size(8),
+           precision::integer-signed-size(8), root_del::integer-size(32),
+           root_disp::integer-size(32), r1::integer-size(8), r2::integer-size(8),
+           r3::integer-size(8), r4::integer-size(8), rts_i::integer-size(32),
            rts_f::integer-size(32), ots_i::integer-size(32), ots_f::integer-size(32),
            rcv_i::integer-size(32), rcv_f::integer-size(32), xmt_i::integer-size(32),
            xmt_f::integer-size(32)>>
@@ -85,6 +105,7 @@ defmodule ModbusServer.Ntp do
       receive_timestamp: rcv_i - @epoch + binfrac(rcv_f),
       transmit_timestamp: timestamp_transit,
       client_receive_timestamp: timestamp_now,
+      client_send_timestamp: timestamp_send,
       offset: timestamp_transit - timestamp_now
     }
   end
