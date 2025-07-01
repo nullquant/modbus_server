@@ -22,18 +22,18 @@ defmodule ModbusServer.Ntp do
   end
 
   def get_time() do
-    random_domain = Enum.random(ntp_servers())
+    random_domain = String.to_charlist(Enum.random(ntp_servers()))
     Logger.info("Selected NTP server name: #{inspect(random_domain)}")
-    {:ok, {_, _, _, _, _, ips}} = :inet_res.getbyname(Enum.random(ntp_servers()), :a)
-    Logger.info("Server IPs: #{inspect(ips)}")
-    ip = Enum.random(ips)
-    Logger.info("Selected server IP: #{inspect(ip)}")
-    get_time(ip)
+    # {:ok, {_, _, _, _, _, ips}} = :inet_res.getbyname(random_domain, :a)
+    # Logger.info("Server IPs: #{inspect(ips)}")
+    # ip = Enum.random(ips)
+    # Logger.info("Selected server IP: #{inspect(ips)}")
+    get_time(random_domain)
   end
 
   def get_time(ip) do
     ntp_request = create_ntp_request()
-    {:ok, ntp_response} = send_ntp_request(ip, ntp_request)
+    ntp_response = send_ntp_request(ip, ntp_request)
     process_ntp_response(ntp_response)
   end
 
