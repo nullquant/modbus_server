@@ -54,10 +54,9 @@ defmodule ModbusServer.Ntp do
     mm = String.pad_leading(Integer.to_string(minutes), 2, "0")
     ss = String.pad_leading(Integer.to_string(seconds), 2, "0")
 
+    # System.cmd("date", ["-s", "#{yy}-#{mth}-#{dd} #{hh}:#{mm}:#{ss}"])
     {message, result} =
-      System.cmd("date", ["-s", "#{yy}-#{mth}-#{dd} #{hh}:#{mm}:#{ss}"])
-
-    # System.cmd("timedatectl", ["set-time", "#{yy}-#{mth}-#{dd} #{hh}:#{mm}:#{ss}"])
+      System.cmd("sudo", ["timedatectl", "set-time", "#{yy}-#{mth}-#{dd} #{hh}:#{mm}:#{ss}"])
 
     IO.puts("#{yy}-#{mth}-#{dd} #{hh}:#{mm}:#{ss}  #{inspect({message, result})}")
 
