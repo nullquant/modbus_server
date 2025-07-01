@@ -9,6 +9,7 @@ defmodule ModbusServer.Application do
     ModbusServer.SFTPServer.start()
 
     children = [
+      ModbusServer.Ntp,
       %{
         id: ModbusServer.EtsServer,
         start: {ModbusServer.EtsServer, :start_link, [0]}
