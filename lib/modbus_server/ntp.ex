@@ -38,7 +38,27 @@ defmodule ModbusServer.Ntp do
     # The roundtrip delay d and system clock offset t are defined as:
     #   d = (T4 - T1) - (T3 - T2)     t = ((T2 - T1) + (T3 - T4)) / 2.
 
-    IO.puts("#{inspect(get_time())}")
+    ntp_time = get_time()
+
+    {{year, month, day}, {hours, minutes, seconds}} =
+      :calendar.system_time_to_local_time(
+        trunc(ntp_time[:transmit_timestamp] * 1_000_000),
+        :microsecond
+      )
+
+    yy = Integer.to_string(year)
+    mth = String.pad_leading(Integer.to_string(month), 2, "0")
+    dd = String.pad_leading(Integer.to_string(day), 2, "0")
+
+    hh = String.pad_leading(Integer.to_string(hours), 2, "0")
+    mm = String.pad_leading(Integer.to_string(minutes), 2, "0")
+    ss = String.pad_leading(Integer.to_string(seconds), 2, "0")
+
+    {message, result} =
+      System.cmd("timedatectl", ["set-time", "\"#{yy}-#{mth}-#{dd} #{hh}:#{mm}:#{ss}\""])
+
+    IO.puts("#{yy}-#{mth}-#{dd} #{hh}:#{mm}:#{ss}  #{inspect({message, result})}")
+
     Process.send_after(self(), :sync, 1000)
     {:noreply, state}
   end
