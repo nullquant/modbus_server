@@ -36,9 +36,9 @@ defmodule ModbusServer.FileWriter do
     pv = to_string(GenServer.call(ModbusServer.EtsServer, {:get_float, 0}))
     sp = to_string(GenServer.call(ModbusServer.EtsServer, {:get_float, 2}))
     out = to_string(GenServer.call(ModbusServer.EtsServer, {:get_float, 14}))
-    [s1v, _] = GenServer.call(ModbusServer.EtsServer, {:read, 16, 1})
+    [s1v] = GenServer.call(ModbusServer.EtsServer, {:read, 16, 1})
     s1 = to_string(s1v)
-    [s2v, _] = GenServer.call(ModbusServer.EtsServer, {:read, 17, 1})
+    [s2v] = GenServer.call(ModbusServer.EtsServer, {:read, 17, 1})
     s2 = to_string(s2v)
 
     i1 =
