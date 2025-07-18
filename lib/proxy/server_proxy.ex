@@ -7,6 +7,8 @@ defmodule Proxy.ServerProxy do
 
   @impl ThousandIsland.Handler
   def handle_connection(socket, state) do
+    Logger.info("(#{__MODULE__}): Proxy Server connecting")
+
     {:ok, {remote_address, port}} = ThousandIsland.Socket.peername(socket)
     {:ok, _pid} = Registry.register(ProxyRegistry, "ServerProxy", nil)
 

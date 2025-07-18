@@ -11,6 +11,8 @@ defmodule ModbusServer.CloudClient do
 
   @impl true
   def init(_args) do
+    Logger.info("(#{__MODULE__}): Cloud Client starting")
+
     Process.flag(:trap_exit, true)
     {:noreply, state} = check_flag(%{working: [0]})
     {:ok, state}

@@ -6,6 +6,8 @@ defmodule ModbusServer.Application do
 
   @impl true
   def start(_type, _args) do
+    Logger.info("(#{__MODULE__}): Application starting")
+
     ModbusServer.SFTPServer.start()
 
     children = [

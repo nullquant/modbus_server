@@ -11,6 +11,8 @@ defmodule ModbusServer.Gpio do
 
   @impl true
   def init(_args) do
+    Logger.info("(#{__MODULE__}): GPIO starting")
+
     {_, 0} =
       System.cmd("gpio", [
         "mode",

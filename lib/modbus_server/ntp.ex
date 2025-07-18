@@ -17,6 +17,8 @@ defmodule ModbusServer.Ntp do
 
   @impl GenServer
   def init(_args) do
+    Logger.info("(#{__MODULE__}): NTP starting")
+
     Process.send_after(self(), :sync, 100)
     {:ok, %{sync: false}}
   end

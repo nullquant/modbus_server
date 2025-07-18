@@ -11,6 +11,8 @@ defmodule ModbusServer.FileWriter do
 
   @impl true
   def init(_args) do
+    Logger.info("(#{__MODULE__}): File Writer starting")
+
     data_folder =
       Path.join(:code.priv_dir(:modbus_server), Application.get_env(:modbus_server, :ftp_folder))
 

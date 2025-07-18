@@ -11,6 +11,8 @@ defmodule ModbusServer.Wifi do
 
   @impl true
   def init(_args) do
+    Logger.info("(#{__MODULE__}): WiFi starting")
+
     Process.send_after(self(), :read, 1000)
     {:ok, %{connected: [], ssid: [], ip: ""}}
   end
@@ -25,13 +27,22 @@ defmodule ModbusServer.Wifi do
   @impl true
   def handle_cast({:disconnect}, %{connected: connected} = state) do
     if connected != [] do
-      Logger.info("(#{__MODULE__}): Disconnect from WiFi")
-      {_, 0} = System.cmd("nmcli", ["device", "disconnect", "wlan0"])
+      {message, result} = System.cmd("nmcli", ["device", "disconnect", "wlan0"])
 
-      GenServer.cast(
-        ModbusServer.EtsServer,
-        {:set_string, Application.get_env(:modbus_server, :wifi_ip_register), "", 16}
-      )
+      case result do
+        0 ->
+          Logger.info("(#{__MODULE__}): Disconnect from WiFi")
+
+          GenServer.cast(
+            ModbusServer.EtsServer,
+            {:set_string, Application.get_env(:modbus_server, :wifi_ip_register), "", 16}
+          )
+
+        value ->
+          Logger.info(
+            "(#{__MODULE__}): Disconnect from WiFi failed: {#{inspect(message)}, #{inspect(value)}}"
+          )
+      end
     end
 
     {:noreply, state}
