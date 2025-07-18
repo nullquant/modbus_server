@@ -6,7 +6,7 @@ defmodule ModbusServer.PanelHandler do
 
   @impl ThousandIsland.Handler
   def handle_connection(socket, state) do
-    Logger.info("(#{__MODULE__}): Panel handler connecting")
+   # Logger.info("(#{__MODULE__}): Panel handler connecting")
 
     {:ok, {remote_address, _port}} = ThousandIsland.Socket.peername(socket)
 
