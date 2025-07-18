@@ -28,6 +28,9 @@ defmodule ModbusServer.PanelHandler do
 
       {:reply, reply} ->
         ThousandIsland.Socket.send(socket, reply)
+
+      {:error} ->
+        Logger.info("(#{__MODULE__}): Can't parse: #{inspect({data})}")
     end
 
     {:continue, state}
@@ -198,5 +201,9 @@ defmodule ModbusServer.PanelHandler do
     )
 
     {:ok}
+  end
+
+  defp parse_request(_value) do
+    {:error}
   end
 end

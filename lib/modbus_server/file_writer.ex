@@ -28,16 +28,18 @@ defmodule ModbusServer.FileWriter do
       |> Enum.map(fn x -> File.rm!(x) end)
     end
 
-    {:ok, %{folder: data_folder}}
+    {:ok, %{folder: data_folder, writed: 0}}
   end
 
   @impl true
-  def handle_cast({:write}, %{folder: data_folder} = state) do
+  def handle_cast({:write}, %{folder: data_folder, writed: count} = state) do
     pv = to_string(GenServer.call(ModbusServer.EtsServer, {:get_float, 0}))
     sp = to_string(GenServer.call(ModbusServer.EtsServer, {:get_float, 2}))
     out = to_string(GenServer.call(ModbusServer.EtsServer, {:get_float, 14}))
-    s1 = to_string(GenServer.call(ModbusServer.EtsServer, {:read, 16, 1}))
-    s2 = to_string(GenServer.call(ModbusServer.EtsServer, {:read, 17, 1}))
+    [s1v, _] = GenServer.call(ModbusServer.EtsServer, {:read, 16, 1})
+    s1 = to_string(s1v)
+    [s2v, _] = GenServer.call(ModbusServer.EtsServer, {:read, 17, 1})
+    s2 = to_string(s2v)
 
     i1 =
       to_string(
@@ -100,6 +102,14 @@ defmodule ModbusServer.FileWriter do
     |> elem(1)
     |> IO.binwrite(data)
 
-    {:noreply, state}
+    new_count =
+      if count > 999 do
+        Logger.info("(#{__MODULE__}): Writed #{inspect(count)} lines")
+        0
+      else
+        count + 1
+      end
+
+    {:noreply, %{state | writed: new_count}}
   end
 end
