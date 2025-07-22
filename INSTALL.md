@@ -92,13 +92,6 @@ WantedBy=multi-user.target
 
 ### Setup change time by any user
 
-<<<<<<< HEAD
-sudo nano /etc/polkit-1/rules.d/10-timedate.rules
-
-=======
-    sudo nano /etc/polkit-1/rules.d/10-timedate.rules
-    
->>>>>>> 82802dc1288bb1d417345e6669a5f435000325b6
 polkit.addRule(function(action, subject) {
     if (action.id == "org.freedesktop.timedate1.set-time") {
         return polkit.Result.YES;
