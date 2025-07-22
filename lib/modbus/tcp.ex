@@ -11,9 +11,9 @@ defmodule Modbus.Tcp do
         :none
 
       {modbus_request, transid} ->
-        Logger.debug(
-          "(#{__MODULE__}) Received Modbus request: #{inspect({transid, modbus_request})}"
-        )
+        # Logger.debug(
+        #  "(#{__MODULE__}) Received Modbus request: #{inspect({transid, modbus_request})}"
+        # )
 
         {cmd, msg_slave, address, count, operation} = modbus_request
 

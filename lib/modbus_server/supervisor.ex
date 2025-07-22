@@ -10,6 +10,8 @@ defmodule ModbusServer.Supervisor do
 
   @impl true
   def init(:ok) do
+    Logger.info("(#{__MODULE__}): Supervisor starting")
+
     eth0_ip = Modbus.Crc.get_ip(Application.get_env(:modbus_server, :eth0_iface))
     eth0_port = Application.get_env(:modbus_server, :eth0_port)
 

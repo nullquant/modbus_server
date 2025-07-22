@@ -10,6 +10,8 @@ defmodule ModbusServer.EtsServer do
 
   @impl true
   def init(_args) do
+    Logger.info("(#{__MODULE__}): ETS Server starting")
+
     table = :ets.new(:modbus_table, [:set, :protected, :named_table])
 
     # TRM500 registers ("PV" 0, "SP" 2, "SP2" 4, SumSP" 6, "Hyst" 8, U.Lo" 10, "U.Hi" 12, "PPV" 14)

@@ -6,6 +6,8 @@ defmodule ModbusServer.PanelHandler do
 
   @impl ThousandIsland.Handler
   def handle_connection(socket, state) do
+   # Logger.info("(#{__MODULE__}): Panel handler connecting")
+
     {:ok, {remote_address, _port}} = ThousandIsland.Socket.peername(socket)
 
     {a, b, c, d} = remote_address
@@ -28,6 +30,9 @@ defmodule ModbusServer.PanelHandler do
 
       {:reply, reply} ->
         ThousandIsland.Socket.send(socket, reply)
+
+      {:error} ->
+        Logger.info("(#{__MODULE__}): Can't parse: #{inspect({data})}")
     end
 
     {:continue, state}
@@ -198,5 +203,9 @@ defmodule ModbusServer.PanelHandler do
     )
 
     {:ok}
+  end
+
+  defp parse_request(_value) do
+    {:error}
   end
 end

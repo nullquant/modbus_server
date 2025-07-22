@@ -11,13 +11,15 @@ defmodule ModbusServer.CloudClient do
 
   @impl true
   def init(_args) do
+    Logger.info("(#{__MODULE__}): Cloud Client starting")
+
     Process.flag(:trap_exit, true)
     {:noreply, state} = check_flag(%{working: [0]})
     {:ok, state}
   end
 
   @impl true
-  def handle_info({:tcp, socket, data}, %{slave: slave, role: role} = state) do
+  def handle_info({:tcp, socket, data}, %{slave: slave, role: role, processed: count} = state) do
     # Logger.info("(#{__MODULE__}): Received data: #{inspect(data, base: :hex)}")
 
     case Modbus.Tcp.parse(slave, role, data) do
@@ -28,7 +30,15 @@ defmodule ModbusServer.CloudClient do
         :ok = :gen_tcp.send(socket, response)
     end
 
-    {:noreply, state}
+    new_count =
+      if count > 999 do
+        Logger.info("(#{__MODULE__}): Received #{inspect(count)} requests")
+        0
+      else
+        count + 1
+      end
+
+    {:noreply, %{state | processed: new_count}}
   end
 
   @impl true
@@ -96,7 +106,8 @@ defmodule ModbusServer.CloudClient do
            working: data,
            socket: socket,
            slave: Application.get_env(:modbus_server, :cloud_slave),
-           role: :read
+           role: :read,
+           processed: 0
          }}
     end
   end

@@ -9,7 +9,7 @@ defmodule ModbusServer.Ntp do
   @client_timeout 500
   # offset yr 1900 to unix epoch
   @epoch 2_208_988_800
-  @repeat 600_000
+  @repeat 3_600_000
 
   def start_link(arg) do
     GenServer.start_link(__MODULE__, arg, name: __MODULE__)
@@ -17,6 +17,8 @@ defmodule ModbusServer.Ntp do
 
   @impl GenServer
   def init(_args) do
+    Logger.info("(#{__MODULE__}): NTP starting")
+
     Process.send_after(self(), :sync, 100)
     {:ok, %{sync: false}}
   end

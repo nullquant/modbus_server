@@ -11,6 +11,8 @@ defmodule Proxy.PanelProxy do
 
   @impl true
   def init(_args) do
+    Logger.info("(#{__MODULE__}): Panel Proxy starting")
+
     port = Application.get_env(:modbus_server, :proxy_panel_port)
 
     {:ok, %{port: port, socket: nil}}
