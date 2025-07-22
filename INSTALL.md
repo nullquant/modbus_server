@@ -13,7 +13,7 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
 
 ### Install Erlang 25
 
-    sudo apt install git wget erlang ntp
+    sudo apt install git wget erlang
 
 ### Install Elixir 1.18.3
 
