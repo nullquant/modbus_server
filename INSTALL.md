@@ -100,12 +100,6 @@ polkit.addRule(function(action, subject) {
 
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 82802dc1288bb1d417345e6669a5f435000325b6
-
-
 
 
 Proxy port 5900 for VNC
