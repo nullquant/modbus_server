@@ -71,7 +71,7 @@ defmodule ModbusServer.Gpio do
 
     stop =
       case int_value do
-        config_stop -> 1
+        ^config_stop -> 1
         _ -> 0
       end
 
