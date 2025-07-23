@@ -68,9 +68,15 @@ defmodule ModbusServer.Gpio do
 
     {int_value, _} = Integer.parse(result)
 
+    stop =
+      case int_value do
+        Application.get_env(:modbus_server, :gpio_stop_on) -> 1
+        _ -> 0
+      end
+
     GenServer.cast(
       ModbusServer.EtsServer,
-      {:set_integer, Application.get_env(:modbus_server, :gpio_stop_register), int_value}
+      {:set_integer, Application.get_env(:modbus_server, :gpio_stop_register), stop}
     )
   end
 end
