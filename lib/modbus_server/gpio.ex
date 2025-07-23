@@ -67,10 +67,11 @@ defmodule ModbusServer.Gpio do
       System.cmd("gpio", ["read", to_string(Application.get_env(:modbus_server, :gpio_stop_pin))])
 
     {int_value, _} = Integer.parse(result)
+    config_stop = Application.get_env(:modbus_server, :gpio_stop_on)
 
     stop =
       case int_value do
-        Application.get_env(:modbus_server, :gpio_stop_on) -> 1
+        config_stop -> 1
         _ -> 0
       end
 
