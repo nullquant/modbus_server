@@ -90,7 +90,7 @@ WantedBy=multi-user.target
 
     sudo systemctl enable modbus_server.service
 
-### Setup change time by any user
+### Setup WiFi and change time by any user
 
     sudo nano /etc/polkit-1/rules.d/10-timedate.rules
 
@@ -101,7 +101,13 @@ polkit.addRule(function(action, subject) {
     }
 });
 
+    sudo nano /etc/polkit-1/rules.d/90-nmcli.rules
 
+polkit.addRule(function(action, subject) {
+    if (action.id.indexOf("org.freedesktop.NetworkManager.") == 0) {
+         return polkit.Result.YES;
+    }
+});
 
 
 
