@@ -32,7 +32,8 @@ defmodule ModbusServer.MixProject do
   defp deps do
     [
       {:dotenvy, "~> 1.0.0"},
-      {:thousand_island, "~> 1.0"}
+      {:thousand_island, "~> 1.0"},
+      {:httpoison, "~> 2.0"}
     ]
   end
 end

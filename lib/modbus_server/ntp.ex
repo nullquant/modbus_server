@@ -40,39 +40,58 @@ defmodule ModbusServer.Ntp do
     # The roundtrip delay d and system clock offset t are defined as:
     #   d = (T4 - T1) - (T3 - T2)     t = ((T2 - T1) + (T3 - T4)) / 2.
 
-    ntp_time = get_time()
+    case net_status() do
+      :error ->
+        Process.send_after(self(), :sync, 1000)
 
-    {{year, month, day}, {hours, minutes, seconds}} =
-      :calendar.system_time_to_local_time(
-        trunc(ntp_time[:transmit_timestamp] * 1_000_000),
-        :microsecond
-      )
+      :ok ->
+        ntp_time = get_time()
 
-    yy = Integer.to_string(year)
-    mth = String.pad_leading(Integer.to_string(month), 2, "0")
-    dd = String.pad_leading(Integer.to_string(day), 2, "0")
+        {{year, month, day}, {hours, minutes, seconds}} =
+          :calendar.system_time_to_local_time(
+            trunc(ntp_time[:transmit_timestamp] * 1_000_000),
+            :microsecond
+          )
 
-    hh = String.pad_leading(Integer.to_string(hours), 2, "0")
-    mm = String.pad_leading(Integer.to_string(minutes), 2, "0")
-    ss = String.pad_leading(Integer.to_string(seconds), 2, "0")
+        yy = Integer.to_string(year)
+        mth = String.pad_leading(Integer.to_string(month), 2, "0")
+        dd = String.pad_leading(Integer.to_string(day), 2, "0")
 
-    Logger.info("(#{__MODULE__}): Set time & date: #{yy}-#{mth}-#{dd} #{hh}:#{mm}:#{ss}")
+        hh = String.pad_leading(Integer.to_string(hours), 2, "0")
+        mm = String.pad_leading(Integer.to_string(minutes), 2, "0")
+        ss = String.pad_leading(Integer.to_string(seconds), 2, "0")
 
-    {message, result} =
-      System.cmd("timedatectl", ["set-time", "#{yy}-#{mth}-#{dd} #{hh}:#{mm}:#{ss}"])
+        Logger.info("(#{__MODULE__}): Set time & date: #{yy}-#{mth}-#{dd} #{hh}:#{mm}:#{ss}")
 
-    Logger.info("(#{__MODULE__}): system answer: #{inspect({message, result})}")
+        {message, result} =
+          System.cmd("timedatectl", ["set-time", "#{yy}-#{mth}-#{dd} #{hh}:#{mm}:#{ss}"])
 
-    Process.send_after(self(), :sync, @repeat)
+        Logger.info("(#{__MODULE__}): system answer: #{inspect({message, result})}")
+
+        Process.send_after(self(), :sync, @repeat)
+    end
+
     {:noreply, state}
   end
 
-  def get_time() do
+  def net_status() do
+    case HTTPoison.head("www.yandex.ru") do
+      {:ok, _} ->
+        Logger.info("(#{__MODULE__}): Internet connection: OK")
+        :ok
+
+      {:error, _} ->
+        # Logger.error("(#{__MODULE__}): No internet connection!")
+        :error
+    end
+  end
+
+  defp get_time() do
     random_domain = String.to_charlist(Enum.random(ntp_servers()))
     get_time(random_domain)
   end
 
-  def get_time(ip) do
+  defp get_time(ip) do
     ntp_request = create_ntp_request()
     {timestamp, ntp_response} = send_ntp_request(ip, ntp_request)
     process_ntp_response(timestamp, ntp_response)
@@ -134,7 +153,7 @@ defmodule ModbusServer.Ntp do
     }
   end
 
-  def binfrac(bin), do: binfrac(bin, 2, 0)
-  def binfrac(0, _, frac), do: frac
-  def binfrac(bin, n, frac), do: binfrac(bsr(bin, 1), n * 2, frac + band(bin, 1) / n)
+  defp binfrac(bin), do: binfrac(bin, 2, 0)
+  defp binfrac(0, _, frac), do: frac
+  defp binfrac(bin, n, frac), do: binfrac(bsr(bin, 1), n * 2, frac + band(bin, 1) / n)
 end

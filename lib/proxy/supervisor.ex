@@ -22,7 +22,7 @@ defmodule Proxy.Supervisor do
     #  |> List.to_tuple()
 
     # Logger.info("(#{__MODULE__}): Listening outside on #{proxy_ip}:#{proxy_pi_port}")
-    Logger.info("(#{__MODULE__}): Listening outside on port #{proxy_pi_port}")
+    Logger.info("(#{__MODULE__}): Listening on port #{proxy_pi_port}")
 
     children = [
       {Registry, [keys: :unique, name: ProxyRegistry]},
