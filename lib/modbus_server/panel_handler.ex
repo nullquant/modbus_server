@@ -32,7 +32,7 @@ defmodule ModbusServer.PanelHandler do
         ThousandIsland.Socket.send(socket, reply)
 
       {:error} ->
-        Logger.info("(#{__MODULE__}): Can't parse: #{inspect({data})}")
+        Logger.info("(#{__MODULE__}): Can't parse: #{inspect({data}, :as_strings)}")
     end
 
     {:continue, state}
