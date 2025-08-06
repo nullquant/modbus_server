@@ -61,9 +61,10 @@ Compile
 
     sudo nano /etc/rc.local
 
-Add line:
+Add lines:
 
-    /home/orangepi/linux-router/lnxrouter -i end0 -o wlan0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
+    # /home/orangepi/linux-router/lnxrouter -i end0 -o wlan0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
+    /home/orangepi/linux-router/lnxrouter -n -i end0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
 
 ### Setup app startup
 
