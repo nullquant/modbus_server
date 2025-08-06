@@ -35,13 +35,20 @@ defmodule ModbusServer.FileWriter do
 
   @impl true
   def handle_cast({:write}, %{folder: data_folder, writed: count} = state) do
+    year = get_string_integer(Application.get_env(:modbus_server, :panel_year_register))
+    month = get_string_integer(Application.get_env(:modbus_server, :panel_month_register), 2)
+    day = get_string_integer(Application.get_env(:modbus_server, :panel_day_register), 2)
+    hour = get_string_integer(Application.get_env(:modbus_server, :panel_hour_register), 2)
+    min = get_string_integer(Application.get_env(:modbus_server, :panel_min_register), 2)
+    sec = get_string_integer(Application.get_env(:modbus_server, :panel_sec_register), 2)
+    mil = get_string_integer(Application.get_env(:modbus_server, :panel_mil_register), 3)
+
     pv = to_string(GenServer.call(ModbusServer.EtsServer, {:get_float, 0}))
     sp = to_string(GenServer.call(ModbusServer.EtsServer, {:get_float, 2}))
     out = to_string(GenServer.call(ModbusServer.EtsServer, {:get_float, 14}))
-    [s1v] = GenServer.call(ModbusServer.EtsServer, {:read, 16, 1})
-    s1 = to_string(s1v)
-    [s2v] = GenServer.call(ModbusServer.EtsServer, {:read, 17, 1})
-    s2 = to_string(s2v)
+
+    s1 = get_string_integer(16)
+    s2 = get_string_integer(17)
 
     i1 =
       to_string(
@@ -78,6 +85,20 @@ defmodule ModbusServer.FileWriter do
     datetime = DateTime.to_string(DateTime.add(DateTime.utc_now(), 3, :hour))
 
     data = [
+      year,
+      "-",
+      month,
+      "-",
+      day,
+      " ",
+      hour,
+      ":",
+      min,
+      ":",
+      sec,
+      ".",
+      mil,
+      ","
       String.slice(datetime, 0..22),
       ",",
       pv,
@@ -100,7 +121,10 @@ defmodule ModbusServer.FileWriter do
       "\n"
     ]
 
-    File.open(Path.join(data_folder, String.slice(datetime, 0..9) <> ".csv"), [:append])
+    # String.slice(datetime, 0..9) <> ".csv"
+    filename = year <> "-" <> month <> "-" <> day ".csv"
+
+    File.open(Path.join(data_folder, filename), [:append])
     |> elem(1)
     |> IO.binwrite(data)
 
@@ -113,5 +137,11 @@ defmodule ModbusServer.FileWriter do
       end
 
     {:noreply, %{state | writed: new_count}}
+  end
+
+  defp get_string_integer(address, pad \\ 1) do
+    [value] = GenServer.call(ModbusServer.EtsServer, {:read, address, 1})
+    to_string(value)
+    |> String.pad_leading(pad, "0")
   end
 end

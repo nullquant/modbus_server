@@ -36,6 +36,15 @@ defmodule ModbusServer.EtsServer do
       :modbus
     )
 
+    # Panel Time
+    set_integer(Application.get_env(:modbus_server, :panel_year_register), 0)
+    set_integer(Application.get_env(:modbus_server, :panel_month_register), 0)
+    set_integer(Application.get_env(:modbus_server, :panel_day_register), 0)
+    set_integer(Application.get_env(:modbus_server, :panel_hour_register), 0)
+    set_integer(Application.get_env(:modbus_server, :panel_min_register), 0)
+    set_integer(Application.get_env(:modbus_server, :panel_sec_register), 0)
+    set_integer(Application.get_env(:modbus_server, :panel_mil_register), 0)
+
     # Currents and fan
     set_float(Application.get_env(:modbus_server, :i1_register), 0.0)
     set_float(Application.get_env(:modbus_server, :i2_register), 0.0)

@@ -45,7 +45,14 @@ defmodule ModbusServer.PanelHandler do
     |> parse_request()
   end
 
-  defp parse_request(["data", pv, sp, i1, i2, i3, fan, out, s1, s2]) do
+  defp parse_request(["data", year, month, day, hour, min, sec, mil, pv, sp, i1, i2, i3, fan, out, s1, s2]) do
+    {year_int, ""} = Integer.parse(year)
+    {month_int, ""} = Integer.parse(month)
+    {day_int, ""} = Integer.parse(day)
+    {hour_int, ""} = Integer.parse(hour)
+    {min_int, ""} = Integer.parse(min)
+    {sec_int, ""} = Integer.parse(sec)
+    {mil_int, ""} = Integer.parse(mil)
     {pv_float, ""} = Float.parse(pv)
     {sp_float, ""} = Float.parse(sp)
     {i1_float, ""} = Float.parse(i1)
@@ -55,6 +62,41 @@ defmodule ModbusServer.PanelHandler do
     {out_float, ""} = Float.parse(out)
     {s1_int, ""} = Integer.parse(s1)
     {s2_int, ""} = Integer.parse(s2)
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, Application.get_env(:modbus_server, :panel_year_register), year_int}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, Application.get_env(:modbus_server, :panel_month_register), month_int}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, Application.get_env(:modbus_server, :panel_day_register), day_int}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, Application.get_env(:modbus_server, :panel_hour_register), hour_int}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, Application.get_env(:modbus_server, :panel_min_register), min_int}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, Application.get_env(:modbus_server, :panel_sec_register), sec_int}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, Application.get_env(:modbus_server, :panel_mil_register), mil_int}
+    )
 
     GenServer.cast(
       ModbusServer.EtsServer,
