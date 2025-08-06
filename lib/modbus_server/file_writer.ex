@@ -122,7 +122,7 @@ defmodule ModbusServer.FileWriter do
     ]
 
     # String.slice(datetime, 0..9) <> ".csv"
-    filename = year <> "-" <> month <> "-" <> day ".csv"
+    filename = year <> "-" <> month <> "-" <> day <> ".csv"
 
     File.open(Path.join(data_folder, filename), [:append])
     |> elem(1)
