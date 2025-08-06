@@ -98,7 +98,7 @@ defmodule ModbusServer.FileWriter do
       sec,
       ".",
       mil,
-      ","
+      ",",
       String.slice(datetime, 0..22),
       ",",
       pv,
