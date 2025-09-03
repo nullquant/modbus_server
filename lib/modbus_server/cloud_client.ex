@@ -38,7 +38,7 @@ defmodule ModbusServer.CloudClient do
         count + 1
       end
 
-    {:noreply, %{state | processed: new_count}}
+    {:noreply, %{state | processed: new_count, last: :os.system_time(:second)}}
   end
 
   @impl true
@@ -78,7 +78,7 @@ defmodule ModbusServer.CloudClient do
     {:normal, state}
   end
 
-  defp check_flag(%{working: working} = state) do
+  defp check_flag(%{working: working, last: last} = state) do
     Process.send_after(self(), :check_flag, 1000)
 
     case GenServer.call(
@@ -86,7 +86,14 @@ defmodule ModbusServer.CloudClient do
            {:read, Application.get_env(:modbus_server, :cloud_on_register), 1}
          ) do
       ^working ->
-        {:noreply, state}
+        ms = :os.system_time(:second)
+
+        if working != 0 and ms - last > 300 do
+          Logger.info("(#{__MODULE__}): Shutdown: timeout")
+          {:stop, {:shutdown, "Timeout"}, state}
+        else
+          {:noreply, state}
+        end
 
       [0] ->
         {:stop, {:shutdown, "Cloud register is off"}, state}
@@ -107,7 +114,8 @@ defmodule ModbusServer.CloudClient do
            socket: socket,
            slave: Application.get_env(:modbus_server, :cloud_slave),
            role: :read,
-           processed: 0
+           processed: 0,
+           last: :os.system_time(:second)
          }}
     end
   end
