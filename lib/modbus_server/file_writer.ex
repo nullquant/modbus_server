@@ -124,9 +124,9 @@ defmodule ModbusServer.FileWriter do
     # String.slice(datetime, 0..9) <> ".csv"
     filename = year <> "-" <> month <> "-" <> day <> ".csv"
 
-    File.open(Path.join(data_folder, filename), [:append])
-    |> elem(1)
-    |> IO.binwrite(data)
+    {:ok, file} = File.open(Path.join(data_folder, filename), [:append])
+    IO.binwrite(file, data)
+    File.close(file)
 
     new_count =
       if count > 999 do
@@ -141,6 +141,7 @@ defmodule ModbusServer.FileWriter do
 
   defp get_string_integer(address, pad \\ 1) do
     [value] = GenServer.call(ModbusServer.EtsServer, {:read, address, 1})
+
     to_string(value)
     |> String.pad_leading(pad, "0")
   end
