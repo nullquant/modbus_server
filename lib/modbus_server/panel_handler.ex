@@ -6,7 +6,7 @@ defmodule ModbusServer.PanelHandler do
 
   @impl ThousandIsland.Handler
   def handle_connection(socket, state) do
-   # Logger.info("(#{__MODULE__}): Panel handler connecting")
+    # Logger.info("(#{__MODULE__}): Panel handler connecting")
 
     {:ok, {remote_address, _port}} = ThousandIsland.Socket.peername(socket)
 
@@ -32,7 +32,7 @@ defmodule ModbusServer.PanelHandler do
         ThousandIsland.Socket.send(socket, reply)
 
       {:error} ->
-        Logger.info("(#{__MODULE__}): Can't parse: #{inspect({data}, :as_strings)}")
+        Logger.info("(#{__MODULE__}): Can't parse: #{inspect({data}, binaries: :as_strings)}")
     end
 
     {:continue, state}
@@ -45,7 +45,25 @@ defmodule ModbusServer.PanelHandler do
     |> parse_request()
   end
 
-  defp parse_request(["data", year, month, day, hour, min, sec, mil, pv, sp, i1, i2, i3, fan, out, s1, s2]) do
+  defp parse_request([
+         "data",
+         year,
+         month,
+         day,
+         hour,
+         min,
+         sec,
+         mil,
+         pv,
+         sp,
+         i1,
+         i2,
+         i3,
+         fan,
+         out,
+         s1,
+         s2
+       ]) do
     {year_int, ""} = Integer.parse(year)
     {month_int, ""} = Integer.parse(month)
     {day_int, ""} = Integer.parse(day)
