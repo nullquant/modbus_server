@@ -12,6 +12,7 @@ source!([
 ])
 
 config :modbus_server,
+  board_type: env!("BOARD_TYPE", :string),
   eth0_iface: env!("ETH0_IFACE", :string),
   eth0_port: env!("ETH0_PORT", :integer),
   cloud_host: env!("CLOUD_HOST", :string),

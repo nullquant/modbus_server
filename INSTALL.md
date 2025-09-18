@@ -13,7 +13,7 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
 
 ### Install Erlang 25
 
-    sudo apt install git wget erlang
+    sudo apt install git wget erlang iptables
 
 ### Install Elixir 1.18.3
 
@@ -63,12 +63,37 @@ Compile
 
 Add lines:
 
-    # /home/orangepi/linux-router/lnxrouter -i end0 -o wlan0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
-    /home/orangepi/linux-router/lnxrouter -n -i end0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
+    # /home/orangepi/linux-router/lnxrouter -i end0 -o wlan0 -g 192.168.128.1 --no-dns --dhcp-dns 1.1.1.1
+    /home/orangepi/linux-router/lnxrouter -n -i end0 -g 192.168.128.1 --no-dns --dhcp-dns 1.1.1.1
+
+OR systemd way
+
+    sudo nano /usr/local/rtr-startup-script
+
+#!/bin/sh -e
+#
+
+/home/pi/linux-router/lnxrouter -n -i end0 -g 192.168.128.1 --no-dns  --dhcp-dns 1.1.1.1
+
+exit 0
+
+    sudo chmod +x /usr/local/rtr-startup-script
+
+
+    sudo nano /etc/systemd/system/rtr-startup.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/rtr-startup-script
+
+[Install]
+WantedBy=multi-user.target
+
 
 ### Setup app startup
 
-    sudo nano /lib/systemd/system/modbus_server.service
+    sudo nano /etc/systemd/system/modbus_server.service
 
 [Unit]
 Description=PI server for Flexem Panel
