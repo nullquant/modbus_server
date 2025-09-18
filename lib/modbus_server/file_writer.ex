@@ -82,6 +82,8 @@ defmodule ModbusServer.FileWriter do
         )
       )
 
+    stop = get_string_integer(Application.get_env(:modbus_server, :gpio_stop_register))
+
     datetime = DateTime.to_string(DateTime.add(DateTime.utc_now(), 3, :hour))
 
     data = [
@@ -118,6 +120,8 @@ defmodule ModbusServer.FileWriter do
       s1,
       ",",
       s2,
+      ",",
+      stop,
       "\n"
     ]
 
@@ -146,3 +150,4 @@ defmodule ModbusServer.FileWriter do
     |> String.pad_leading(pad, "0")
   end
 end
+
