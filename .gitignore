@@ -11,3 +11,6 @@ erl_crash.dump
 *.ez
 modbus_server-*.tar
 *.log
+
+mix.lock
+
