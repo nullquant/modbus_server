@@ -59,7 +59,7 @@ defmodule ModbusServer.Supervisor do
           id: ModbusServer.Gpio,
           start: {ModbusServer.Gpio, :start_link, [0]}
         }
-      ] ++ ti_child
+      ] ++ [ti_child]
 
     Supervisor.init(children, strategy: :one_for_one)
   end
