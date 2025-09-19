@@ -14,7 +14,7 @@ defmodule ModbusServer.FileWriter do
     Logger.info("(#{__MODULE__}): File Writer starting")
 
     data_folder =
-      Path.join(:code.priv_dir(:modbus_server), Application.get_env(:modbus_server, :ftp_folder))
+      Path.join(System.get_env("HOME"), Application.get_env(:modbus_server, :ftp_folder))
 
     if not File.dir?(data_folder) do
       File.mkdir(data_folder)
@@ -49,6 +49,8 @@ defmodule ModbusServer.FileWriter do
 
     s1 = get_string_integer(16)
     s2 = get_string_integer(17)
+    state = get_string_integer(18)
+    stage = get_string_integer(19)
 
     i1 =
       to_string(
@@ -121,6 +123,10 @@ defmodule ModbusServer.FileWriter do
       ",",
       s2,
       ",",
+      state,
+      ",",
+      stage,
+      ",",
       stop,
       "\n"
     ]
@@ -150,4 +156,3 @@ defmodule ModbusServer.FileWriter do
     |> String.pad_leading(pad, "0")
   end
 end
-

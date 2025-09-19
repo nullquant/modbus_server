@@ -60,7 +60,7 @@ config :modbus_server,
   proxy_pi_port: env!("PROXY_PI_PORT", :integer)
 
 ftp_dir =
-  to_charlist(Path.join(:code.priv_dir(:modbus_server), "data/modbus_server.log"))
+  to_charlist(Path.join(System.get_env("HOME"), "data/modbus_server.log"))
 
 config :logger, :default_formatter, format: "$date $time [$level] $message\n"
 
@@ -69,7 +69,7 @@ config :logger, :default_handler,
     file: ftp_dir,
     filesync_repeat_interval: 5000,
     file_check: 5000,
-    max_no_bytes: 10_000_000,
+    max_no_bytes: 1_000_000,
     max_no_files: 5,
     compress_on_rotate: true
   ]

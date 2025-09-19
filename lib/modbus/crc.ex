@@ -607,6 +607,9 @@ defmodule Modbus.Crc do
       nil ->
         nil
 
+      "" ->
+        nil
+
       value ->
         value
         |> String.split(" ")

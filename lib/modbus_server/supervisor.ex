@@ -12,45 +12,54 @@ defmodule ModbusServer.Supervisor do
   def init(:ok) do
     Logger.info("(#{__MODULE__}): Supervisor starting")
 
-    eth0_ip = Modbus.Crc.get_ip(Application.get_env(:modbus_server, :eth0_iface))
+    eth0 = Application.get_env(:modbus_server, :eth0_iface)
+
+    eth0_ip = Modbus.Crc.get_ip(eth0)
     eth0_port = Application.get_env(:modbus_server, :eth0_port)
 
-    eth0_ip_tuple =
+    ti_child =
       case eth0_ip do
         nil ->
+          Logger.info(
+            "(#{__MODULE__}): Interface #{eth0} is not initialized, panel is not connected: no ip"
+          )
+
           nil
 
         value ->
-          value
-          |> String.split(".")
-          |> Enum.map(&String.to_integer/1)
-          |> List.to_tuple()
+          Logger.info("(#{__MODULE__}): Listening from panel on #{eth0_ip}:#{eth0_port}")
+
+          eth0_ip_tuple =
+            value
+            |> String.split(".")
+            |> Enum.map(&String.to_integer/1)
+            |> List.to_tuple()
+
+          {ThousandIsland,
+           port: eth0_port,
+           handler_module: ModbusServer.PanelHandler,
+           transport_options: [ip: eth0_ip_tuple]}
       end
 
-    Logger.info("(#{__MODULE__}): Listening from panel on #{eth0_ip}:#{eth0_port}")
-
-    children = [
-      %{
-        id: ModbusServer.CloudClient,
-        start: {ModbusServer.CloudClient, :start_link, [0]}
-      },
-      %{
-        id: ModbusServer.FileWriter,
-        start: {ModbusServer.FileWriter, :start_link, [0]}
-      },
-      %{
-        id: ModbusServer.Wifi,
-        start: {ModbusServer.Wifi, :start_link, [0]}
-      },
-      %{
-        id: ModbusServer.Gpio,
-        start: {ModbusServer.Gpio, :start_link, [0]}
-      },
-      {ThousandIsland,
-       port: eth0_port,
-       handler_module: ModbusServer.PanelHandler,
-       transport_options: [ip: eth0_ip_tuple]}
-    ]
+    children =
+      [
+        %{
+          id: ModbusServer.CloudClient,
+          start: {ModbusServer.CloudClient, :start_link, [0]}
+        },
+        %{
+          id: ModbusServer.FileWriter,
+          start: {ModbusServer.FileWriter, :start_link, [0]}
+        },
+        %{
+          id: ModbusServer.Wifi,
+          start: {ModbusServer.Wifi, :start_link, [0]}
+        },
+        %{
+          id: ModbusServer.Gpio,
+          start: {ModbusServer.Gpio, :start_link, [0]}
+        }
+      ] ++ ti_child
 
     Supervisor.init(children, strategy: :one_for_one)
   end

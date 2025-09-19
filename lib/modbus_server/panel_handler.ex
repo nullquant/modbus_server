@@ -62,7 +62,9 @@ defmodule ModbusServer.PanelHandler do
          fan,
          out,
          s1,
-         s2
+         s2,
+         state,
+         stage
        ]) do
     {year_int, ""} = Integer.parse(year)
     {month_int, ""} = Integer.parse(month)
@@ -80,6 +82,8 @@ defmodule ModbusServer.PanelHandler do
     {out_float, ""} = Float.parse(out)
     {s1_int, ""} = Integer.parse(s1)
     {s2_int, ""} = Integer.parse(s2)
+    {state_int, ""} = Integer.parse(state)
+    {stage_int, ""} = Integer.parse(stage)
 
     GenServer.cast(
       ModbusServer.EtsServer,
@@ -144,6 +148,16 @@ defmodule ModbusServer.PanelHandler do
     GenServer.cast(
       ModbusServer.EtsServer,
       {:set_integer, 17, s2_int}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, 18, state_int}
+    )
+
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, 19, stage_int}
     )
 
     GenServer.cast(
@@ -242,13 +256,22 @@ defmodule ModbusServer.PanelHandler do
         {:read, Application.get_env(:modbus_server, :gpio_stop_register), 1}
       )
 
+    ### Set GPIO stop register in ETS back to zero in case GPIO crash after 1
+    GenServer.cast(
+      ModbusServer.EtsServer,
+      {:set_integer, Application.get_env(:modbus_server, :gpio_stop_register), 0}
+    )
+
     {:reply,
-     ssids <>
-       (GenServer.call(
-          ModbusServer.EtsServer,
-          {:read, Application.get_env(:modbus_server, :wifi_ip_register), 16}
-        )
-        |> List.to_string()) <> to_string(error) <> to_string(stop)}
+     to_string(stop) <>
+       to_string(error) <>
+       ssids <>
+       List.to_string(
+         GenServer.call(
+           ModbusServer.EtsServer,
+           {:read, Application.get_env(:modbus_server, :wifi_ip_register), 16}
+         )
+       )}
   end
 
   defp parse_request(["disconnect"]) do

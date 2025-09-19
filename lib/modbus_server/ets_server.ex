@@ -18,7 +18,7 @@ defmodule ModbusServer.EtsServer do
     set_floats([0, 2, 4, 6, 8, 10, 12, 14], [20.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0])
 
     # TRM500 registers ("inp.F" 16, "di.st" 17, di.rc" 18)
-    set_integers([16, 17, 18], [1, 0, 1])
+    set_integers([16, 17, 18, 19], [1, 1, 0, 0])
 
     # CLOUD "ID"
     set_string(

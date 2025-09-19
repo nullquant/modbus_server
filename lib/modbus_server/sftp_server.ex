@@ -6,10 +6,10 @@ defmodule ModbusServer.SFTPServer do
   def start do
     # TODO: start the SSH daemon with the SFTP subsystem
     port = Application.get_env(:modbus_server, :ftp_port)
-    system_folder = Path.join(:code.priv_dir(:modbus_server), "sftp_daemon")
+    system_folder = Path.join(System.get_env("HOME"), "sftp_daemon")
 
     data_folder =
-      Path.join(:code.priv_dir(:modbus_server), Application.get_env(:modbus_server, :ftp_folder))
+      Path.join(System.get_env("HOME"), Application.get_env(:modbus_server, :ftp_folder))
 
     if not File.dir?(data_folder) do
       File.mkdir(data_folder)

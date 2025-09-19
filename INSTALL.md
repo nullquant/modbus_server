@@ -6,6 +6,10 @@ Manual: http://www.orangepi.org/orangepiwiki/index.php/Orange_Pi_Zero_3
 
 Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-Zero-3.html
 
+### Set timezone
+
+    sudo timedatectl set-timezone Europe/Moscow
+
 ### Update
 
     sudo apt update
@@ -42,17 +46,23 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
     cd ~
     git clone https://github.com/nullquant/modbus_server.git
 
-Add private config (CLOUD_HOST, CLOUD_PORT, CLOUD_ID, CLOUD_TOKEN, FTP_USER, FTP_PASSWORD):
+### Add private config (CLOUD_HOST, CLOUD_PORT, CLOUD_ID, CLOUD_TOKEN, FTP_USER, FTP_PASSWORD):
 
     cd modbus_server
     nano envs/.overrides.env
 
-Add SSH host key:
+### Create data and sftp_daemon folders
+
+    cd ~
+    mkdir data
+
+### Add SSH host key:
 
     ssh-keygen -q -N "" -t rsa -f priv/sftp_daemon/ssh_host_rsa_key
 
-Compile
+### Compile
 
+    cd modbus_server
     mix deps.get
     mix compile
     mix release
@@ -89,6 +99,8 @@ ExecStart=/usr/local/rtr-startup-script
 
 [Install]
 WantedBy=multi-user.target
+
+    sudo systemctl enable rtr-startup.service
 
 
 ### Setup app startup
