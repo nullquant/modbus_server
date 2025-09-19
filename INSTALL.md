@@ -17,7 +17,7 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
 
 ### Install Erlang 25
 
-    sudo apt install git wget erlang iptables
+    sudo apt install git wget erlang iptables watchdog
 
 ### Install Elixir 1.18.3
 
@@ -55,10 +55,12 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
 
     cd ~
     mkdir data
+    mkdir sftp_daemon
 
 ### Add SSH host key:
 
-    ssh-keygen -q -N "" -t rsa -f priv/sftp_daemon/ssh_host_rsa_key
+    //ssh-keygen -q -N "" -t rsa -f priv/sftp_daemon/ssh_host_rsa_key
+    ssh-keygen -q -N "" -t rsa -f sftp_daemon/ssh_host_rsa_key
 
 ### Compile
 
