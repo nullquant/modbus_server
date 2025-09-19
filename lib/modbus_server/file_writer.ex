@@ -49,8 +49,8 @@ defmodule ModbusServer.FileWriter do
 
     s1 = get_string_integer(16)
     s2 = get_string_integer(17)
-    state = get_string_integer(18)
-    stage = get_string_integer(19)
+    panel_state = get_string_integer(18)
+    panel_stage = get_string_integer(19)
 
     i1 =
       to_string(
@@ -123,9 +123,9 @@ defmodule ModbusServer.FileWriter do
       ",",
       s2,
       ",",
-      state,
+      panel_state,
       ",",
-      stage,
+      panel_stage,
       ",",
       stop,
       "\n"
