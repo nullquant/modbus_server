@@ -46,11 +46,6 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
     cd ~
     git clone https://github.com/nullquant/modbus_server.git
 
-### Add private config (CLOUD_HOST, CLOUD_PORT, CLOUD_ID, CLOUD_TOKEN, FTP_USER, FTP_PASSWORD):
-
-    cd modbus_server
-    nano envs/.overrides.env
-
 ### Create data and sftp_daemon folders
 
     cd ~
@@ -59,12 +54,15 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
 
 ### Add SSH host key:
 
-    //ssh-keygen -q -N "" -t rsa -f priv/sftp_daemon/ssh_host_rsa_key
     ssh-keygen -q -N "" -t rsa -f sftp_daemon/ssh_host_rsa_key
+
+### Add private config (CLOUD_HOST, CLOUD_PORT, CLOUD_ID, CLOUD_TOKEN, FTP_USER, FTP_PASSWORD):
+
+    cd modbus_server
+    nano envs/.overrides.env
 
 ### Compile
 
-    cd modbus_server
     mix deps.get
     mix compile
     mix release
