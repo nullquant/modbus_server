@@ -7,7 +7,7 @@ defmodule ModbusServer.Application do
   @impl true
   def start(_type, _args) do
 
-    Logger.info("(#{__MODULE__}): Application starting", Application.spec(:modbus_server, :vsn))
+    Logger.info("(#{__MODULE__}): Application starting, version " <> to_string(Application.spec(:modbus_server, :vsn)))
 
     ModbusServer.SFTPServer.start()
 
