@@ -75,7 +75,7 @@ defmodule ModbusServer.EtsServer do
     set_integer(Application.get_env(:modbus_server, :gpio_stop_register), 0)
     set_integer(Application.get_env(:modbus_server, :gpio_fan_register), 0)
 
-    Logger.info("EtsServer: initialization")
+    Logger.info("(#{__MODULE__}): EtsServer: initialization")
     {:ok, %{data: table}}
   end
 

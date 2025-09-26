@@ -93,7 +93,7 @@ sudo echo > /etc/rc.local <<- "EOF"
 #
 # By default this script does nothing.
 
-/home/orangepi/linux-router/lnxrouter -n -i eth0 -g 192.168.128.1 --no-dns --dhcp-dns 1.1.1.1
+/home/orangepi/linux-router/lnxrouter -n -i $DEVICE -g 192.168.128.1 --no-dns --dhcp-dns 1.1.1.1
 
 exit 0
 EOF
