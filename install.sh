@@ -8,32 +8,48 @@ GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}Setting timezone...${NC}"
+echo -e "${GREEN}Setting timezone...${NC}"
 sudo timedatectl set-timezone Europe/Moscow
 
+# Changing apt sources
+echo -e "${GREEN}Changing apt sources...${NC}"
+sudo echo > nano /etc/apt/sources.list <<- "EOF"
+deb http://mirrors.huaweicloud.com/debian bookworm main contrib non-free non-free-firmware
+#deb http://repo.huaweicloud.com/debian bookworm main contrib non-free non-free-firmware
+#deb-src http://repo.huaweicloud.com/debian bookworm main contrib non-free non-free-firmware
+
+deb http://mirrors.huaweicloud.com/debian bookworm-updates main contrib non-free non-free-firmware
+#deb http://repo.huaweicloud.com/debian bookworm-updates main contrib non-free non-free-firmware
+#deb-src http://repo.huaweicloud.com/debian bookworm-updates main contrib non-free non-free-firmware
+
+deb http://mirrors.huaweicloud.com/debian bookworm-backports main contrib non-free non-free-firmware
+#deb http://repo.huaweicloud.com/debian bookworm-backports main contrib non-free non-free-firmware
+#deb-src http://repo.huaweicloud.com/debian bookworm-backports main contrib non-free non-free-firmware
+EOF
+
 # Update the package lists
-echo -e "${BLUE}Running apt update...${NC}"
+echo -e "${GREEN}Running apt update...${NC}"
 sudo apt update
 
 # Upgrade installed packages without prompting for confirmation
-echo -e "${BLUE}Running apt upgrade...${NC}"
+echo -e "${GREEN}Running apt upgrade...${NC}"
 sudo apt upgrade -y
 
 # Install Erlang 25
-echo -e "${BLUE}Installing Erlang...${NC}"
+echo -e "${GREEN}Installing Erlang...${NC}"
 sudo apt install git wget erlang iptables -y
 
 # Perform a distribution upgrade, handling dependencies and removing obsolete packages
-echo -e "${BLUE}Running apt dist-upgrade...${NC}"
+echo -e "${GREEN}Running apt dist-upgrade...${NC}"
 sudo apt dist-upgrade -y
 
 # Clean up unnecessary packages
-echo -e "${BLUE}Cleaning up unnecessary packages...${NC}"
+echo -e "${GREEN}Cleaning up unnecessary packages...${NC}"
 sudo apt autoremove -y
 sudo apt clean
 
 # Install Elixir 1.18.3
-echo -e "${BLUE}Installing Elixir 1.18.3 / OTP 25...${NC}"
+echo -e "${GREEN}Installing Elixir 1.18.3 / OTP 25...${NC}"
 cd /opt
 sudo mkdir elixir
 cd elixir
@@ -46,22 +62,22 @@ sudo ln -s /opt/elixir/bin/mix /usr/local/bin/mix
 sudo ln -s /opt/elixir/bin/iex /usr/local/bin/iex
 
 # Install linux-router
-echo -e "${BLUE}Installing linux-router...${NC}"
-cd ~
+echo -e "${GREEN}Installing linux-router...${NC}"
+cd /home/orangepi
 git clone https://github.com/garywill/linux-router.git
 
 # Install linux-router
-echo -e "${BLUE}Installing modbus_server...${NC}"
+echo -e "${GREEN}Installing modbus_server...${NC}"
 git clone https://github.com/nullquant/modbus_server.git
 
 # Add SSH host key
-echo -e "${BLUE}Creating SSH host key...${NC}"
+echo -e "${GREEN}Creating SSH host key...${NC}"
 mkdir data
 mkdir sftp_daemon
 ssh-keygen -q -N "" -t rsa -f sftp_daemon/ssh_host_rsa_key
 
 # Setup linux-router startup
-echo -e "${BLUE}Setup linux-router startup...${NC}"
+echo -e "${GREEN}Setup linux-router startup...${NC}"
 DEVICE=$(nmcli device | grep -E "eth0|end0" | cut -d ' ' -f 1)
 sudo echo > /etc/rc.local <<- "EOF"
 #!/bin/sh -e
@@ -83,7 +99,7 @@ exit 0
 EOF
 
 # Setup WiFi and change time by any user
-echo -e "${BLUE}Creating time policy...${NC}"
+echo -e "${GREEN}Creating time policy...${NC}"
 sudo echo > /etc/polkit-1/rules.d/10-timedate.rules <<- "EOF"
 polkit.addRule(function(action, subject) {
     if (action.id == "org.freedesktop.timedate1.set-time") {
@@ -92,7 +108,7 @@ polkit.addRule(function(action, subject) {
 });
 EOF
 
-echo -e "${BLUE}Creating wi-fi policy...${NC}"
+echo -e "${GREEN}Creating wi-fi policy...${NC}"
 sudo echo > /etc/polkit-1/rules.d/90-nmcli.rules <<- "EOF"
 polkit.addRule(function(action, subject) {
     if (action.id.indexOf("org.freedesktop.NetworkManager.") == 0) {
@@ -102,22 +118,24 @@ polkit.addRule(function(action, subject) {
 EOF
 
 # Add private config (CLOUD_HOST, CLOUD_PORT, CLOUD_ID, CLOUD_TOKEN, FTP_USER, FTP_PASSWORD):
-if [ -f ~/env ]; then
-  echo -e "${BLUE}Add private config${NC}"
-  cp ~/env envs/.overrides.env
+if [ -f /home/orangepi/env ]; then
+  echo -e "${GREEN}Add private config${NC}"
+  cp /home/orangepi/env envs/.overrides.env
 else
-  echo -e "${BLUE}Can't find private config env file${NC}"
+  echo -e "${GREEN}Can't find private config env file${NC}"
 fi
 
 # Compile
-echo -e "${BLUE}Compile modbus_server${NC}"
+echo -e "${GREEN}Compile modbus_server${NC}"
 cd modbus_server
 mix deps.get
 mix compile
 mix release
 
+git config --local core.hooksPath .githooks/
+
 # Setup app startup
-echo -e "${BLUE}Creating modbus_server service...${NC}"
+echo -e "${GREEN}Creating modbus_server service...${NC}"
 sudo cat > /etc/systemd/system/modbus_server.service <<- "EOF"
 [Unit]
 Description=PI server for Flexem Panel
@@ -134,8 +152,11 @@ WorkingDirectory=/home/orangepi/modbus_server
 
 ExecStart=/home/orangepi/modbus_server/_build/dev/rel/modbus_server/bin/modbus_server start
 ExecStop=/home/orangepi/modbus_server/_build/dev/rel/modbus_server/bin/modbus_server stop
+
+[Install]
+WantedBy=multi-user.target
 EOF
 
 sudo systemctl enable modbus_server.service
 
-echo -e "${BLUE}All done${NC}"
+echo -e "${GREEN}All done${NC}"

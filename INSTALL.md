@@ -10,7 +10,7 @@ Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontro
 
 wget https://github.com/nullquant/modbus_server/raw/refs/heads/main/install.sh
 chmod +x install.sh
-./install.sh
+sudo ./install.sh
 
 
 ### Set timezone
