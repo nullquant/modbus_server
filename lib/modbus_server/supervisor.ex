@@ -24,7 +24,7 @@ defmodule ModbusServer.Supervisor do
             "(#{__MODULE__}): Interface #{eth0} is not initialized, panel is not connected: no ip"
           )
 
-          nil
+          []
 
         value ->
           Logger.info("(#{__MODULE__}): Listening from panel on #{eth0_ip}:#{eth0_port}")
