@@ -127,12 +127,46 @@ polkit.addRule(function(action, subject) {
     }
 });
 
+### Setup service restart without sudo
 
-
- sudo nano /etc/sudoers
-
+    sudo nano /etc/sudoers
 
 orangepi ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart modbus_server.service
+
+### Setup periodic git pull
+
+    sudo nano /etc/systemd/system/git_pull.service
+
+[Unit]
+Description=Periodic git pull
+
+[Service]
+User=orangepi
+Group=orangepi
+Type=oneshot
+
+WorkingDirectory=/home/orangepi/modbus_server
+
+ExecStart=/usr/bin/git -C /home/orangepi/modbus_server pull
+
+    sudo nano /etc/systemd/system/git_pull.timer
+
+[Unit]
+Description=Runs Periodic git pull
+
+[Timer]
+OnCalendar=*:0/10
+Persistent=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target
+
+    sudo systemctl daemon-reload
+    sudo systemctl enable git_pull.timer
+    sudo systemctl start git_pull.timer
+
+
 
 
 

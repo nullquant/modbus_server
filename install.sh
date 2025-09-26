@@ -13,7 +13,8 @@ sudo timedatectl set-timezone Europe/Moscow
 
 # Changing apt sources
 echo -e "${GREEN}Changing apt sources...${NC}"
-sudo echo > nano /etc/apt/sources.list <<- "EOF"
+sudo rm /etc/apt/sources.list
+sudo cat > nano /etc/apt/sources.list <<- "EOF"
 deb http://mirrors.huaweicloud.com/debian bookworm main contrib non-free non-free-firmware
 #deb http://repo.huaweicloud.com/debian bookworm main contrib non-free non-free-firmware
 #deb-src http://repo.huaweicloud.com/debian bookworm main contrib non-free non-free-firmware
@@ -79,7 +80,8 @@ ssh-keygen -q -N "" -t rsa -f sftp_daemon/ssh_host_rsa_key
 # Setup linux-router startup
 echo -e "${GREEN}Setup linux-router startup...${NC}"
 DEVICE=$(nmcli device | grep -E "eth0|end0" | cut -d ' ' -f 1)
-sudo echo > /etc/rc.local <<- "EOF"
+sudo rm /etc/rc.local
+sudo cat > /etc/rc.local <<- "EOF"
 #!/bin/sh -e
 #
 # rc.local
@@ -100,7 +102,7 @@ EOF
 
 # Setup WiFi and change time by any user
 echo -e "${GREEN}Creating time policy...${NC}"
-sudo echo > /etc/polkit-1/rules.d/10-timedate.rules <<- "EOF"
+sudo cat > /etc/polkit-1/rules.d/10-timedate.rules <<- "EOF"
 polkit.addRule(function(action, subject) {
     if (action.id == "org.freedesktop.timedate1.set-time") {
         return polkit.Result.YES;
@@ -109,7 +111,7 @@ polkit.addRule(function(action, subject) {
 EOF
 
 echo -e "${GREEN}Creating wi-fi policy...${NC}"
-sudo echo > /etc/polkit-1/rules.d/90-nmcli.rules <<- "EOF"
+sudo cat > /etc/polkit-1/rules.d/90-nmcli.rules <<- "EOF"
 polkit.addRule(function(action, subject) {
     if (action.id.indexOf("org.freedesktop.NetworkManager.") == 0) {
          return polkit.Result.YES;
@@ -158,5 +160,42 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl enable modbus_server.service
+
+# Setup periodic git pull
+echo -e "${GREEN}Creating git pull service...${NC}"
+sudo cat > /etc/systemd/system/git_pull.service <<- "EOF"
+[Unit]
+Description=Periodic git pull
+
+[Service]
+User=orangepi
+Group=orangepi
+Type=oneshot
+
+WorkingDirectory=/home/orangepi/modbus_server
+
+ExecStart=/usr/bin/git -C /home/orangepi/modbus_server pull
+EOF
+
+sudo cat > /etc/systemd/system/git_pull.timer <<- "EOF"
+[Unit]
+Description=Runs Periodic git pull
+
+[Timer]
+OnCalendar=*:0/10
+Persistent=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target
+EOF
+
+sudo echo "orangepi ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart modbus_server.service" >> /etc/sudoers
+
+sudo systemctl daemon-reload
+sudo systemctl enable git_pull.timer
+sudo systemctl start git_pull.timer
+
+
 
 echo -e "${GREEN}All done${NC}"
