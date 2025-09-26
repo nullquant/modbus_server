@@ -129,7 +129,10 @@ polkit.addRule(function(action, subject) {
 
 
 
+ sudo nano /etc/sudoers
 
+
+orangepi ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart modbus_server.service
 
 
 
