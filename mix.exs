@@ -1,10 +1,11 @@
 defmodule ModbusServer.MixProject do
   use Mix.Project
+  @default_version "0.9"
 
   def project do
     [
       app: :modbus_server,
-      version: "0.8.1",
+      version: version(),
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -35,5 +36,31 @@ defmodule ModbusServer.MixProject do
       {:thousand_island, "~> 1.0"},
       {:httpoison, "~> 2.0"}
     ]
+  end
+
+  defp version do
+    case get_version() do
+      {:ok, string} ->
+        @default_version <> "." <> String.trim(string)
+
+      _ ->
+        @default_version
+    end
+  end
+
+  defp get_version do
+    case File.read("VERSION") do
+      {:error, _} ->
+        case System.cmd("git", ["rev-list", "HEAD", "--count", "-C", ".."]) do
+          {string, 0} ->
+            {:ok, string}
+
+          {error, errno} ->
+            {:error, "Could not get version. errno: #{inspect(errno)}, error: #{inspect(error)}"}
+        end
+
+      ok ->
+        ok
+    end
   end
 end

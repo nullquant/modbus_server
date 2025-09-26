@@ -6,4 +6,4 @@ mix compile
 mix release
 /home/orangepi/modbus_server/_build/dev/rel/modbus_server/bin/modbus_server restart
 
-# git update-index --chmod=+x path/to/file
+# git update-index --chmod=+x post-merge
