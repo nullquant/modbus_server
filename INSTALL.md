@@ -6,6 +6,13 @@ Manual: http://www.orangepi.org/orangepiwiki/index.php/Orange_Pi_Zero_3
 
 Download image from http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-Zero-3.html
 
+### Install bt script
+
+wget https://github.com/nullquant/modbus_server/raw/refs/heads/main/install.sh
+chmod +x install.sh
+./install.sh
+
+
 ### Set timezone
 
     sudo timedatectl set-timezone Europe/Moscow
