@@ -51,7 +51,7 @@ defmodule ModbusServer.MixProject do
   defp get_version do
     case File.read("VERSION") do
       {:error, _} ->
-        case System.cmd("git", ["rev-list", "HEAD", "--count", "-C", ".."]) do
+        case System.cmd("git", ["rev-list", "HEAD", "--count", "-C", "."]) do
           {string, 0} ->
             {:ok, string}
 
