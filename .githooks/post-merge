@@ -5,6 +5,6 @@ mix deps.get
 mix compile
 mix release
 #/home/orangepi/modbus_server/_build/dev/rel/modbus_server/bin/modbus_server restart
-/usr/bin/systemctl restart modbus_server.service
+sudo /usr/bin/systemctl restart modbus_server.service
 
 # git update-index --chmod=+x post-merge
